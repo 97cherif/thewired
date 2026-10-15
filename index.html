@@ -121,8 +121,8 @@ footer b{color:var(--teal)}
    </section>
    <section>
     <h2>BACKUP</h2>
-    <div class="row"><button class="mini" id="bexp" type="button">export</button><button class="mini" id="bimp" type="button">import</button></div>
-    <div class="hint">Your friends live in this browser. Export to keep them.</div>
+    <div class="row"><button class="mini" id="bexp" type="button">export</button><button class="mini" id="bimp" type="button">import</button><button class="mini" id="bclr" type="button">clear chats</button></div>
+    <div class="hint">Friends and messages are saved on this device only. Export keeps your friends (not messages).</div>
    </section>
   </aside>
   <div id="chat">
@@ -179,7 +179,7 @@ function draw(m){
  var el=document.createElement("div");el.className="m"+(m.me?" me":"");el.setAttribute("data-id",m.id);
  var w=document.createElement("div");w.className="who";
  var rb=document.createElement("button");rb.className="rb";rb.type="button";rb.textContent="↩ reply";rb.onclick=function(){setReply(m)};w.appendChild(rb);
- w.appendChild(document.createTextNode(m.n+" @ "+new Date(m.t).toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"})));el.appendChild(w);
+ w.appendChild(document.createTextNode(m.n+" @ "+stamp(m.t)));el.appendChild(w);
  if(m.r){var q=document.createElement("div");q.className="rp";var qb=document.createElement("b");qb.textContent=(m.r.n||"?")+": ";q.appendChild(qb);q.appendChild(document.createTextNode(m.r.x||""));
   q.onclick=function(){var t=m.r.id&&document.querySelector('[data-id="'+m.r.id+'"]');if(t){t.scrollIntoView({block:"center"});t.classList.remove("fl");void t.offsetWidth;t.classList.add("fl")}};el.appendChild(q)}
  if(m.g){
@@ -209,7 +209,8 @@ function safe(d,mine){
 }
 function pack(m){return{n:m.n,x:m.x,s:m.s,i:m.i,ts:m.t,id:m.id,r:m.r,g:m.g}}
 function addMsg(key,m,quiet){
- (chats[key]=chats[key]||[]).push(m);if(!m.me&&!quiet)beep("msg");if(chats[key].length>200)chats[key].shift();
+ if((chats[key]||[]).some(function(x){return x.id===m.id}))return;
+ (chats[key]=chats[key]||[]).push(m);saveSoon();if(!m.me&&!quiet)beep("msg");if(chats[key].length>200)chats[key].shift();
  if(key===active)draw(m);else{unread[key]=1;renderFriends()}
 }
 function open(key){
@@ -364,6 +365,35 @@ window.addEventListener("message",function(e){
  else if(d.gm==="close")gameClose(false);
 });
 
+/* ---------- saved chats (kept in this browser/app only) ---------- */
+function stamp(t){var d=new Date(t),n=new Date(),tm=d.toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});return d.toDateString()===n.toDateString()?tm:d.toLocaleDateString([],{month:"short",day:"numeric"})+" "+tm}
+var saveT=null;
+function saveSoon(){clearTimeout(saveT);saveT=setTimeout(persist,400)}
+function persist(){
+ var tries=[[100,10],[100,3],[100,0],[40,0],[10,0]];
+ for(var n=0;n<tries.length;n++){
+  var lim=tries[n][0],img=tries[n][1],data={};
+  Object.keys(chats).forEach(function(k){
+   var a=chats[k].slice(-lim);
+   data[k]=a.map(function(m,i){
+    if(m.i&&i<a.length-img){var c={};for(var f in m)c[f]=m[f];c.i="";if(!c.x&&!c.s)c.x="[picture not saved]";return c}
+    return m;
+   });
+  });
+  try{localStorage.setItem("w97_chats",JSON.stringify(data));return}catch(e){}
+ }
+}
+function loadChats(){
+ var d=null;try{d=JSON.parse(LS("w97_chats"))}catch(e){}
+ if(!d||typeof d!=="object")return;
+ Object.keys(d).forEach(function(k){
+  if(!/^(dm:w97-[a-z0-9]{6,12}|room:[A-Z0-9]{1,12})$/.test(k)||!Array.isArray(d[k]))return;
+  chats[k]=d[k].slice(-100).map(function(m){return safe(m,!!(m&&m.me))});
+ });
+}
+addEventListener("pagehide",persist);
+document.addEventListener("visibilitychange",function(){if(document.hidden)persist()});
+
 /* ---------- reply ---------- */
 var replyTo=null;
 function preview(m){return m.x?m.x.slice(0,60):(m.g?"[game invite]":m.s?"[sticker]":(m.i?"[picture]":""))}
@@ -436,6 +466,7 @@ $("addbtn").onclick=function(){addFriend($("addid").value);$("addid").value=""};
 $("rjoin").onclick=function(){joinRoom($("rcode").value)};
 $("rnew").onclick=function(){var c=rnd(6).toUpperCase();$("rcode").value=c;joinRoom(c)};
 $("menu").onclick=function(){$("side").classList.toggle("open")};
+$("bclr").onclick=function(){if(!confirm("Delete all saved messages on this device?"))return;chats={};unread={};try{localStorage.removeItem("w97_chats")}catch(e){}if(active)open(active);else $("log").textContent="";sys("saved messages cleared")};
 $("bexp").onclick=function(){copy(btoa(unescape(encodeURIComponent(JSON.stringify({me:me,friends:friends})))),"backup code copied, keep it somewhere safe")};
 $("bimp").onclick=function(){
  var s=prompt("Paste your backup code:");if(!s)return;
@@ -462,7 +493,7 @@ function start(){
   else if(e.type!=="peer-unavailable")$("status").textContent="error: "+e.type;
  });
 }
-renderFriends();start();
+loadChats();renderFriends();start();
 })();
 </script>
 <script>if("serviceWorker" in navigator)window.addEventListener("load",function(){navigator.serviceWorker.register("/sw.js").catch(function(){})});</script>
