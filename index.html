@@ -99,6 +99,14 @@ footer b{color:var(--teal)}
 .tick{font-size:10px;color:var(--soft)}.tick.ok{color:var(--teal)}
 #youav{flex:none;display:block}
 #gman{display:none}
+.who .rb{margin:0}.who .ma{margin-left:auto;display:flex}
+.au{display:block;margin-top:4px;width:240px;max-width:100%;height:36px}
+#typing{padding:0 14px;min-height:18px;font-size:12px;color:var(--blue)}
+#etray{display:none;flex-direction:column;border-top:1px solid var(--dim);background:var(--panel)}#etray.open{display:flex}
+#etabs{display:flex;gap:4px;padding:6px 14px 0}
+#egrid{display:flex;flex-wrap:wrap;gap:2px;padding:6px 14px;max-height:150px;overflow-y:auto}
+#egrid button,#etabs button{padding:2px 5px;font-size:20px;line-height:1.2;background:none;border:1px solid transparent}
+#etabs button.on{border-color:var(--teal)}
 #gmod{position:fixed;inset:0;z-index:70;background:rgba(0,0,0,.75);display:none;align-items:center;justify-content:center;padding:14px}
 #gmod.open{display:flex}
 #gbox{background:var(--panel);border:1px solid var(--teal);width:100%;max-width:380px;max-height:90%;overflow:auto;padding:12px;display:flex;flex-direction:column;gap:8px}
@@ -118,7 +126,7 @@ footer b{color:var(--teal)}
    <section>
     <h2>YOU</h2>
     <div class="row"><span id="youav"></span><input type="text" id="name" maxlength="16" placeholder="your handle" aria-label="your handle"></div>
-    <div class="row"><button class="mini" id="cpid" type="button">copy my ID</button><button class="mini" id="cplink" type="button">copy invite link</button></div>
+    <div class="row"><button class="mini" id="cpid" type="button">copy my ID</button><button class="mini" id="cplink" type="button">copy invite link</button><button class="mini" id="tzb" type="button">🕐 clock</button></div>
     <div class="hint" id="myid" style="margin-top:4px;word-break:break-all"></div>
    </section>
    <section>
@@ -147,12 +155,15 @@ footer b{color:var(--teal)}
   <div id="chat">
    <div id="top"><span id="topt">&gt; pick a friend or join a room</span><button class="mini" id="gman" type="button">👥 group</button><button class="mini" id="play" type="button" title="invite to play"><span class="pl-l">▶ play 3 kdbat o 7a9i9a w7da</span><span class="pl-s">▶ play 3 kdbat</span></button><button class="mini" id="playc" type="button" title="invite to play chess"><span class="pl-l">♟ play chess</span><span class="pl-s">♟ chess</span></button></div>
    <div id="log"><div class="sys">&gt; present day. present time.</div></div>
+   <div id="typing"></div>
    <div id="tray"></div>
+   <div id="etray"><div id="etabs"></div><div id="egrid"></div></div>
    <div id="rbar"><span id="rtxt"></span><button class="mini" id="rx" type="button">✕</button></div>
    <div id="prev"></div>
    <div id="bar">
-    <button id="stk" type="button" title="stickers">:)</button>
+    <button id="emo" type="button" title="emoji">😀</button><button id="stk" type="button" title="stickers">:)</button>
     <button id="pic" type="button" title="picture">IMG</button>
+    <button id="mic" type="button" title="voice message">🎤</button>
     <input type="file" id="file" accept="image/*">
     <input type="text" id="txt" maxlength="500" placeholder="say something..." autocomplete="off">
     <button id="send" type="button">SEND</button>
@@ -204,7 +215,7 @@ try{groups=JSON.parse(LS("w97_groups"))||[]}catch(e){}
 outbox=outbox.filter(function(e){return e&&validId(e.to||"")&&typeof e.id==="string"&&e.pk&&typeof e.pk==="object"});
 function saveOB(){
  var rows=outbox.map(function(e){return{to:e.to,id:e.id,pk:e.pk,ts:e.ts}});
- try{localStorage.setItem("w97_outbox",JSON.stringify(rows))}catch(e){try{localStorage.setItem("w97_outbox",JSON.stringify(rows.map(function(r){var p={};for(var k in r.pk)p[k]=r.pk[k];if(p.i){p.i="";if(!p.x&&!p.s)p.x="[picture not saved]"}return{to:r.to,id:r.id,pk:p,ts:r.ts}})))}catch(e2){}}
+ try{localStorage.setItem("w97_outbox",JSON.stringify(rows))}catch(e){try{localStorage.setItem("w97_outbox",JSON.stringify(rows.map(function(r){var p={};for(var k in r.pk)p[k]=r.pk[k];if(p.i||p.a){p.i="";p.a="";if(!p.x&&!p.s)p.x="[media not saved]"}return{to:r.to,id:r.id,pk:p,ts:r.ts}})))}catch(e2){}}
 }
 function queue(to,pk,id){pk.k=id;outbox.push({to:to,id:id,pk:pk,ts:Date.now()});if(outbox.length>400)outbox.shift();saveOB();flush(to)}
 function flush(to,force){
@@ -312,7 +323,10 @@ function draw(m){
  var w=document.createElement("div");w.className="who";
  w.appendChild(avatar(m.u||m.n,"sm"));w.appendChild(document.createTextNode(m.n+" @ "+stamp(m.t)));
  if(m.me&&/^(dm|gc):/.test(active||"")){var tk=document.createElement("span"),tx=tickFor(m);tk.className="tick"+(tx==="✓✓"?" ok":"");tk.setAttribute("data-tk",m.id);tk.textContent=tx;w.appendChild(tk)}
- var rb=document.createElement("button");rb.className="rb";rb.type="button";rb.textContent="↩ reply";rb.onclick=function(){setReply(m)};w.appendChild(rb);el.appendChild(w);
+ var ma=document.createElement("span");ma.className="ma";
+ var ab=function(t,f){var b=document.createElement("button");b.className="rb";b.type="button";b.textContent=t;b.onclick=f;ma.appendChild(b)};
+ ab("↩ reply",function(){setReply(m)});if(m.x)ab("copy",function(){copy(m.x,"message copied")});ab("🗑",function(){delMsg(m)});
+ w.appendChild(ma);el.appendChild(w);
  if(m.r){var q=document.createElement("div");q.className="rp";var qb=document.createElement("b");qb.textContent=(m.r.n||"?")+": ";q.appendChild(qb);q.appendChild(document.createTextNode(m.r.x||""));
   q.onclick=function(){var t=m.r.id&&document.querySelector('[data-id="'+m.r.id+'"]');if(t){t.scrollIntoView({block:"center"});t.classList.remove("fl");void t.offsetWidth;t.classList.add("fl")}};el.appendChild(q)}
  if(m.g){
@@ -330,24 +344,26 @@ function draw(m){
  if(m.x){var p=document.createElement("div");p.textContent=m.x;el.appendChild(p)}
  if(m.s&&S[m.s]){var s=document.createElement("img");s.className="st";s.src=S[m.s];s.alt="sticker";el.appendChild(s)}
  if(m.i){var i=document.createElement("img");i.src=m.i;i.alt="picture";el.appendChild(i)}
+ if(m.a){var au=document.createElement("audio");au.className="au";au.controls=true;au.preload="metadata";au.src=m.a;el.appendChild(au)}
  var L=$("log"),bot=L.scrollHeight-L.scrollTop-L.clientHeight<90;L.appendChild(el);if(bot||m.me)L.scrollTop=1e9;
 }
 function safe(d,mine){
  var tm=+d.ts||+d.t||Date.now();
- var m={id:/^[a-z0-9]{4,12}$/.test(d.id||"")?d.id:rnd(8),n:clean(d.n,16)||"anon",t:tm,x:clean(d.x,500),s:S[d.s]?d.s:"",i:"",r:null,g:null,u:validId(d.u||"")?d.u:"",me:!!mine};
+ var m={id:/^[a-z0-9]{4,12}$/.test(d.id||"")?d.id:rnd(8),n:clean(d.n,16)||"anon",t:tm,x:clean(d.x,500),s:S[d.s]?d.s:"",i:"",a:"",r:null,g:null,u:validId(d.u||"")?d.u:"",me:!!mine};
  if(d.r&&typeof d.r==="object")m.r={id:/^[a-z0-9]{4,12}$/.test(d.r.id||"")?d.r.id:"",n:clean(d.r.n,16),x:clean(d.r.x,60)};
  if(d.g&&typeof d.g==="object"&&/^[a-z0-9]{4,12}$/.test(d.g.id||""))m.g={id:d.g.id,k:d.g.k==="chess"?"chess":"kdbat"};
  if(typeof d.i==="string"&&d.i.length<200000&&/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+\/=]+$/.test(d.i))m.i=d.i;
+ if(typeof d.a==="string"&&d.a.length<250000&&/^data:audio\/(webm|ogg|mp4|mpeg|wav|aac|x-m4a);base64,[A-Za-z0-9+\/=]+$/.test(d.a))m.a=d.a;
  return m;
 }
-function pack(m){return{n:m.n,x:m.x,s:m.s,i:m.i,ts:m.t,id:m.id,r:m.r,g:m.g,u:m.u}}
+function pack(m){return{n:m.n,x:m.x,s:m.s,i:m.i,ts:m.t,id:m.id,r:m.r,g:m.g,u:m.u,a:m.a}}
 function addMsg(key,m,quiet){
  if((chats[key]||[]).some(function(x){return x.id===m.id}))return;
  (chats[key]=chats[key]||[]).push(m);saveSoon();if(!m.me&&!quiet)beep("msg");if(chats[key].length>200)chats[key].shift();
  if(key===active)draw(m);else{unread[key]=1;renderFriends()}
 }
 function open(key){
- active=key;clearReply();delete unread[key];$("side").classList.remove("open");
+ if(rec)recStop(true);active=key;clearReply();delete unread[key];$("side").classList.remove("open");
  var L=$("log");L.textContent="";
  var top=$("topt");top.textContent="";$("play").style.display=$("playc").style.display=key.indexOf("dm:")===0?"inline-block":"none";$("gman").style.display=key.indexOf("gc:")===0?"inline-block":"none";
  var b=document.createElement("b");
@@ -355,7 +371,7 @@ function open(key){
   if(f&&!online[f.id])sys("they are offline. your messages are queued and get delivered when they come online.")}
  else if(key.indexOf("gc:")===0){var gg=grp(key.slice(3));b.textContent=gg?gg.name:"?";top.appendChild(document.createTextNode("> group "));top.appendChild(b);top.appendChild(document.createTextNode(gg?" · "+gg.members.length+" members":""))}
  else{b.textContent=key.slice(5);top.appendChild(document.createTextNode("> room "));top.appendChild(b);var c=document.createElement("span");c.id="cnt";top.appendChild(c);updCount()}
- (chats[key]||[]).forEach(draw);renderFriends();
+ (chats[key]||[]).forEach(draw);renderFriends();showTyping();
 }
 function renderFriends(){
  var box=$("flist");box.textContent="";
@@ -395,9 +411,12 @@ function wire(c){
    renderFriends();
   }
   else if(d.t==="fa"){if(f){f.ok=true;save();sys(f.name+" accepted your request");beep("req")}renderFriends()}
-  else if(d.t==="dm"&&f&&f.ok){ack(c,d);var dm=safe(d,false);dm.u=id;addMsg("dm:"+id,dm)}
+  else if(d.t==="dm"&&f&&f.ok){ack(c,d);var dm=safe(d,false);dm.u=id;clearTyper("dm:"+id,id);addMsg("dm:"+id,dm)}
+  else if(d.t==="del"&&f&&f.ok){ack(c,d);rmMsg("dm:"+id,d.mid,id)}
+  else if(d.t==="gdel"){var G2=grp(d.gid);if(G2&&inG(G2,id)){ack(c,d);rmMsg("gc:"+G2.id,d.mid,id)}}
+  else if(d.t==="ty"){typing(c,d,f)}
   else if(d.t==="ack"){if(typeof d.id==="string"){outbox=outbox.filter(function(e){return!(e.to===id&&e.id===d.id)});saveOB();refreshTicks()}}
-  else if(d.t==="gm"){var G=grp(d.gid);if(G&&inG(G,id)){ack(c,d);var gm=safe(d,false);gm.u=id;addMsg("gc:"+G.id,gm)}}
+  else if(d.t==="gm"){var G=grp(d.gid);if(G&&inG(G,id)){ack(c,d);var gm=safe(d,false);gm.u=id;clearTyper("gc:"+G.id,id);addMsg("gc:"+G.id,gm)}}
   else if(d.t==="gnew"||d.t==="gu"||d.t==="gleave"){gctl(c,d,f)}
   else if(d.t==="g"&&f&&f.ok&&gameWith===id){if(gready)$("gf").contentWindow.postMessage({gm:"rx",m:d.m},"*");else gq.push(d.m)}
   else if(d.t==="gacc"&&f&&f.ok){var pi=typeof d.gid==="string"&&pendInv[d.gid];if(pi&&pi.id===id&&!gameWith){delete pendInv[d.gid];beep("req");gameOpen(id,true,pi.k)}else c.send({t:"gno"})}
@@ -506,7 +525,8 @@ window.addEventListener("message",function(e){
 });
 
 /* ---------- saved chats (kept in this browser/app only) ---------- */
-function stamp(t){var d=new Date(t),n=new Date(),tm=d.toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});return d.toDateString()===n.toDateString()?tm:d.toLocaleDateString([],{month:"short",day:"numeric"})+" "+tm}
+function tzfmt(o){var tz=LS("w97_tz");if(tz===null)tz="Africa/Casablanca";if(tz)o.timeZone=tz;try{return new Intl.DateTimeFormat([],o)}catch(e){delete o.timeZone;return new Intl.DateTimeFormat([],o)}}
+function stamp(t){var d=new Date(t),tm=tzfmt({hour:"2-digit",minute:"2-digit"}).format(d),a=tzfmt({year:"numeric",month:"numeric",day:"numeric"});return a.format(d)===a.format(new Date())?tm:tzfmt({month:"short",day:"numeric"}).format(d)+" "+tm}
 var saveT=null;
 function saveSoon(){clearTimeout(saveT);saveT=setTimeout(persist,400)}
 function persist(){
@@ -516,7 +536,7 @@ function persist(){
   Object.keys(chats).forEach(function(k){
    var a=chats[k].slice(-lim);
    data[k]=a.map(function(m,i){
-    if(m.i&&i<a.length-img){var c={};for(var f in m)c[f]=m[f];c.i="";if(!c.x&&!c.s)c.x="[picture not saved]";return c}
+    if((m.i||m.a)&&i<a.length-img){var c={};for(var f in m)c[f]=m[f];c.i="";c.a="";if(!c.x&&!c.s)c.x="[media not saved]";return c}
     return m;
    });
   });
@@ -536,7 +556,7 @@ document.addEventListener("visibilitychange",function(){if(document.hidden)persi
 
 /* ---------- reply ---------- */
 var replyTo=null;
-function preview(m){return m.x?m.x.slice(0,60):(m.g?"[game invite]":m.s?"[sticker]":(m.i?"[picture]":""))}
+function preview(m){return m.x?m.x.slice(0,60):(m.g?"[game invite]":m.s?"[sticker]":(m.i?"[picture]":m.a?"[voice message]":""))}
 function setReply(m){replyTo={id:m.id,n:m.n,x:preview(m)};var r=$("rtxt");r.textContent="";r.appendChild(document.createTextNode("replying to "));var b=document.createElement("b");b.textContent=m.n;r.appendChild(b);r.appendChild(document.createTextNode(": "+replyTo.x));$("rbar").style.display="flex";$("txt").focus()}
 function clearReply(){replyTo=null;$("rbar").style.display="none"}
 $("rx").onclick=clearReply;
@@ -562,8 +582,8 @@ $("snd").onclick=function(){muted=!muted;LS("w97_mute",muted?"1":"0");this.textC
 /* ---------- sending ---------- */
 function out(x){
  if(!active){sys("pick a friend or join a room first");return}
- var t=Date.now(),m=safe({n:me.name,ts:t,x:x.x,s:x.s,i:x.i,r:x.g?null:replyTo,g:x.g,u:me.id},true);
- if(!m.x&&!m.s&&!m.i&&!m.g)return;
+ var t=Date.now(),m=safe({n:me.name,ts:t,x:x.x,s:x.s,i:x.i,a:x.a,r:x.g?null:replyTo,g:x.g,u:me.id},true);
+ if(!m.x&&!m.s&&!m.i&&!m.a&&!m.g)return;
  if(active.indexOf("dm:")===0){
   var id=active.slice(3),c=dconn[id];
   if(m.g&&(!c||!c.open)){sys("they are offline, you can't start a game now");pingOne(id);return}
@@ -585,7 +605,6 @@ function send(){
 }
 $("send").onclick=send;
 $("txt").addEventListener("keydown",function(e){if(e.key==="Enter"){e.preventDefault();send()}});
-$("stk").onclick=function(){$("tray").classList.toggle("open")};
 $("pic").onclick=function(){$("file").click()};
 $("file").onchange=function(){
  var f=this.files[0];this.value="";if(!f||!/^image\//.test(f.type))return;
@@ -598,6 +617,90 @@ $("file").onchange=function(){
   pending=o;var p=$("prev");p.style.display="block";p.textContent="";var t=document.createElement("img");t.src=o;t.alt="";p.appendChild(t);p.appendChild(document.createTextNode("picture ready, press SEND"));
  };
  im.onerror=function(){URL.revokeObjectURL(url);sys("could not read that picture")};im.src=url;
+};
+
+/* ---------- delete / typing / emoji / voice / clock ---------- */
+function rmMsg(key,mid,author){
+ if(typeof mid!=="string")return;var a=chats[key]||[],n=a.length;
+ chats[key]=a.filter(function(x){return!(x.id===mid&&x.u===author)});
+ if(chats[key].length!==n){saveSoon();if(key===active){var el=document.querySelector('#log [data-id="'+mid+'"]');if(el)el.remove()}}
+}
+function delMsg(m){
+ var key=active;if(!key)return;var mine=m.me&&/^(dm|gc):/.test(key);
+ if(!confirm(mine?"Delete this message for everyone?":"Delete this message from this device?"))return;
+ chats[key]=(chats[key]||[]).filter(function(x){return x.id!==m.id});saveSoon();
+ var el=document.querySelector('#log [data-id="'+m.id+'"]');if(el)el.remove();
+ if(!mine)return;
+ var dm=key.indexOf("dm:")===0,tos=dm?[key.slice(3)]:((grp(key.slice(3))||{members:[]}).members.map(function(x){return x.id}).filter(function(i){return i!==me.id}));
+ tos.forEach(function(to){
+  var e=null;outbox.forEach(function(x){if(x.to===to&&x.id===m.id)e=x});
+  if(e){outbox=outbox.filter(function(x){return x!==e});saveOB();if(!e.cn)return}
+  queue(to,dm?{t:"del",mid:m.id}:{t:"gdel",gid:key.slice(3),mid:m.id},"c"+rnd(8));
+ });
+}
+var typers={},lastTy=0;
+function showTyping(){var el=$("typing");if(!el)return;var t=typers[active],n=t?Object.keys(t).map(function(k){return t[k].n}):[];el.textContent=n.length?n.join(", ")+(n.length>1?" are":" is")+" typing...":""}
+function clearTyper(key,id){var t=typers[key];if(t&&t[id]){clearTimeout(t[id].h);delete t[id];if(key===active)showTyping()}}
+function typing(c,d,f){
+ var id=c.peer,key,nm;
+ if(d.gid){var G=grp(d.gid);if(!G||!inG(G,id))return;key="gc:"+G.id;nm=f?f.name:G.members.filter(function(m){return m.id===id})[0].name}
+ else{if(!f||!f.ok)return;key="dm:"+id;nm=f.name}
+ var t=typers[key]=typers[key]||{};if(t[id])clearTimeout(t[id].h);
+ t[id]={n:nm,h:setTimeout(function(){clearTyper(key,id)},4500)};if(key===active)showTyping();
+}
+$("txt").addEventListener("input",function(){
+ if(!active||!this.value||Date.now()-lastTy<2500)return;lastTy=Date.now();
+ if(active.indexOf("dm:")===0){var c=dconn[active.slice(3)];if(c&&c.open)c.send({t:"ty"})}
+ else if(active.indexOf("gc:")===0){var G=grp(active.slice(3));if(G)G.members.forEach(function(m){var c=dconn[m.id];if(m.id!==me.id&&c&&c.open)c.send({t:"ty",gid:G.id})})}
+});
+var EMO={"😀":"😀 😃 😄 😁 😆 😅 😂 🤣 😊 😇 🙂 😉 😍 🥰 😘 😋 😜 🤪 😎 🤩 🥳 😏 😒 😞 😔 😟 😕 🙁 😣 😖 😫 😩 🥺 😢 😭 😤 😠 😡 🤬 🤯 😳 🥵 🥶 😱 😨 😰 😥 😓 🤗 🤔 🤭 🤫 😶 😐 😑 😬 🙄 😯 😴 🤤 😷 🤒 🤕 🤢 🤮 🥴 😵 🤠 😈 👿 💀 👻 👽 🤖 💩",
+"👍":"👍 👎 👌 ✌️ 🤞 🤟 🤘 🤙 👈 👉 👆 👇 ☝️ ✋ 👋 🤝 🙏 👏 🙌 💪 ✍️ 🫶 ❤️ 🧡 💛 💚 💙 💜 🖤 🤍 💔 💕 💞 💓 💗 💖 💘 💝 🔥 ✨ ⭐ 💯 💢 💥 💫 💦 💤",
+"🐶":"🐶 🐱 🐭 🐹 🐰 🦊 🐻 🐼 🐨 🐯 🦁 🐮 🐷 🐸 🐵 🙈 🙉 🙊 🐔 🐧 🐦 🦅 🦉 🐺 🐴 🦄 🐝 🦋 🐢 🐍 🐙 🐬 🐳 🦈 🌹 🌸 🌻 🌲 🍀 🌍 🌙 ☀️ ⚡ ❄️ 🌈 ☔",
+"🍕":"🍕 🍔 🍟 🌭 🌮 🌯 🍗 🍖 🍞 🧀 🥚 🥞 🍩 🍪 🎂 🍰 🍫 🍬 🍭 🍿 🍎 🍌 🍉 🍓 🍒 🥑 🍅 ☕ 🍵 🥤 🍺 🍷 🥂",
+"⚽":"⚽ 🏀 🏈 🎾 🎮 🎲 ♟️ 🎯 🎧 🎤 🎸 🎹 🎬 📷 📱 💻 ⌚ 💡 🔑 🔒 💰 🎁 🎉 🎊 🏆 🚗 ✈️ 🚀 🏠 ❌ ✅ ❓ ❗ 💬 🕹️"};
+function insEmo(e){var t=$("txt"),a=t.selectionStart==null?t.value.length:t.selectionStart,b=t.selectionEnd==null?a:t.selectionEnd;if(t.value.length+e.length>500)return;t.value=t.value.slice(0,a)+e+t.value.slice(b);var p=a+e.length;t.focus();try{t.setSelectionRange(p,p)}catch(x){}}
+function emoTab(k){
+ var tb=$("etabs"),g=$("egrid");tb.textContent="";g.textContent="";
+ Object.keys(EMO).forEach(function(c){var b=document.createElement("button");b.type="button";b.textContent=c;if(c===k)b.className="on";b.onclick=function(){emoTab(c)};tb.appendChild(b)});
+ EMO[k].split(" ").forEach(function(e){var b=document.createElement("button");b.type="button";b.textContent=e;b.onclick=function(){insEmo(e)};g.appendChild(b)});
+}
+emoTab("😀");
+$("emo").onclick=function(){$("tray").classList.remove("open");$("etray").classList.toggle("open")};
+$("stk").onclick=function(){$("etray").classList.remove("open");$("tray").classList.toggle("open")};
+var rec=null,recT=null,recS=0,recChunks=[],recCancel=false;
+function recUI(){
+ var p=$("prev");if(!rec){if(!pending){p.style.display="none";p.textContent=""}return}
+ p.style.display="block";p.textContent="";var d=document.createElement("span");d.style.color="var(--red)";d.textContent="● recording "+recS+"s (max 30s). press 🎤 again to send ";p.appendChild(d);
+ var x=document.createElement("button");x.type="button";x.className="mini";x.textContent="cancel";x.onclick=function(){recStop(true)};p.appendChild(x);
+}
+function recStop(cancel){if(!rec)return;recCancel=!!cancel;try{rec.stop()}catch(e){}}
+$("mic").onclick=function(){
+ if(rec){recStop(false);return}
+ if(!active){sys("pick a friend, group or room first");return}
+ if(!navigator.mediaDevices||!window.MediaRecorder){sys("voice messages are not supported on this browser");return}
+ navigator.mediaDevices.getUserMedia({audio:true}).then(function(st){
+  var r;try{r=new MediaRecorder(st,{audioBitsPerSecond:24000})}catch(e){r=new MediaRecorder(st)}
+  recChunks=[];recCancel=false;recS=0;rec=r;
+  r.ondataavailable=function(e){if(e.data&&e.data.size)recChunks.push(e.data)};
+  r.onstop=function(){
+   clearInterval(recT);st.getTracks().forEach(function(t){t.stop()});
+   var mt=(r.mimeType||"audio/webm").split(";")[0],cancel=recCancel,ch=recChunks;rec=null;$("mic").textContent="🎤";recUI();
+   if(cancel||!ch.length)return;
+   if(!/^audio\/(webm|ogg|mp4|mpeg|wav|aac|x-m4a)$/.test(mt)){sys("this browser records an unsupported audio format");return}
+   var rd=new FileReader();rd.onload=function(){
+    var u=String(rd.result).replace(/^data:[^;,]*(;[^,]*)?;base64,/,"data:"+mt+";base64,");
+    if(u.length>240000){sys("voice message too long");return}out({a:u});
+   };rd.readAsDataURL(new Blob(ch,{type:mt}));
+  };
+  r.start();$("mic").textContent="■";recUI();
+  recT=setInterval(function(){recS++;recUI();if(recS>=30)recStop(false)},1000);
+ }).catch(function(){sys("microphone blocked. allow it in your browser settings.")});
+};
+$("tzb").onclick=function(){
+ var cur=LS("w97_tz");if(cur===null)cur="Africa/Casablanca";
+ var v=prompt("Time zone (e.g. Africa/Casablanca, Europe/Paris, UTC). Empty = use this device's clock:",cur);if(v===null)return;v=v.trim();
+ if(v){try{new Intl.DateTimeFormat([],{timeZone:v})}catch(e){alert("Unknown time zone.");return}}
+ LS("w97_tz",v);if(active)open(active);
 };
 
 /* ---------- buttons ---------- */
