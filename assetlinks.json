@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "app.vercel.thewired_psi.twa",
+        "sha256_cert_fingerprints": ["31:94:65:43:CE:77:4F:68:F4:41:BE:D8:68:4C:0C:76:9D:26:50:69:12:DE:FA:67:23:25:3E:E6:0C:0F:64:09"]
+      }
+    }]
