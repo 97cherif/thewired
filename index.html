@@ -210,6 +210,7 @@ footer b{color:var(--teal)}
 .mqr.on .n,.mqr.on .t{color:var(--teal)}
 .mqr .x{flex:none;background:none;border:none;color:var(--soft);padding:0 4px}
 .mqr .x:hover{background:none;color:var(--red)}
+#mmenu{display:none;position:fixed;z-index:80;flex-direction:column;gap:6px;padding:6px;background:var(--panel);border:1px solid var(--teal);box-shadow:0 0 16px rgba(111,227,210,.25)}#mmenu.open{display:flex}#mmenu button{text-align:left;white-space:nowrap}
 #ytbox{display:none;height:150px;margin:0 10px 6px;background:#000}#mbar.hasyt #ytbox{display:block}#mbar.min #ytbox{position:fixed;left:-9999px;top:0;width:200px;height:200px;display:block}#ytbox iframe{width:100%;height:100%;border:0}
 #mbar.min .mbd,#mbar.min .mpr,#mbar.min .mct,#mbar.min #mstat,#mbar.min .mq{display:none}
 button:disabled{opacity:.4;cursor:default}button:disabled:hover{background:var(--field);color:var(--teal)}
@@ -1755,10 +1756,24 @@ setInterval(function(){
  $("mprev").innerHTML=MI.prev;$("mnext").innerHTML=MI.next;$("mpp").innerHTML=$("mtbpp").innerHTML=MI.play;
  $("mvol").value=musVol;
 })();
-$("mus").onclick=$("madd").onclick=function(){
+$("madd").onclick=function(){
  if(!active){sys("pick a friend or group first");return}
  $("mfile").click();
 };
+/* the 🎵 button asks what to add, so a link works from the very start */
+(function(){
+ var m=document.createElement("div");m.id="mmenu";
+ [["📁 local music file",function(){$("mfile").click()}],["▶ YouTube / Spotify link",function(){$("myt").click()}]].forEach(function(x){
+  var b=document.createElement("button");b.type="button";b.textContent=x[0];b.onclick=function(){m.classList.remove("open");x[1]()};m.appendChild(b);
+ });
+ document.body.appendChild(m);
+ $("mus").onclick=function(e){
+  if(!active){sys("pick a friend or group first");return}
+  e.stopPropagation();
+  if(m.classList.toggle("open")){var r=this.getBoundingClientRect();m.style.left=Math.max(6,Math.min(r.left,innerWidth-230))+"px";m.style.bottom=(innerHeight-r.top+6)+"px"}
+ };
+ document.addEventListener("click",function(){m.classList.remove("open")});
+})();
 $("myt").onclick=function(){
  if(!active){sys("pick a friend or group first");return}
  var u=prompt("Paste a YouTube or Spotify link (song, album or playlist)");if(u){if(/spotify/i.test(u))musAddSP(u);else musAddYT(u)}
