@@ -152,6 +152,22 @@ footer b{color:var(--teal)}
 #ringtxt b{color:var(--teal)}
 #ringyes{border-color:#4dff9a;color:#4dff9a}#ringyes:hover{background:#4dff9a;color:#000}
 #ringno{border-color:var(--red);color:var(--red)}#ringno:hover{background:var(--red);color:#000}
+
+#mbar{display:none;flex-direction:column;gap:6px;padding:7px 14px;border-bottom:1px solid var(--teal);background:var(--panel);font-size:12px;color:var(--soft)}
+#mbar.open{display:flex}
+.mrow{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+#mtitle{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text)}
+#mtitle b{color:var(--teal);font-weight:600}
+#mseek{flex:1;min-width:90px;accent-color:var(--teal)}
+#mvol{width:64px;accent-color:var(--teal)}
+#mrm{border-color:var(--red);color:var(--red)}#mrm:hover{background:var(--red);color:#000}
+#mpp{min-width:78px}
+.eq{display:inline-flex;gap:2px;align-items:flex-end;height:14px;flex:none}
+.eq i{width:3px;height:4px;background:var(--dim)}
+.eq.on i{background:var(--teal);animation:eqb .8s infinite ease-in-out alternate}
+.eq.on i:nth-child(2){animation-delay:-.3s}.eq.on i:nth-child(3){animation-delay:-.6s}
+@keyframes eqb{from{height:3px}to{height:14px}}
+button:disabled{opacity:.4;cursor:default}button:disabled:hover{background:var(--field);color:var(--teal)}
 </style>
 </head>
 <body>
@@ -199,6 +215,7 @@ footer b{color:var(--teal)}
   <div id="chat">
    <div id="top"><span id="topt">&gt; pick a friend or join a room</span><button class="mini" id="gman" type="button">👥 group</button><button class="mini" id="vcb" type="button" style="display:none"></button><button class="mini" id="play" type="button" title="invite to play"><span class="pl-l">▶ play 3 Lies & 1 Truth</span><span class="pl-s">▶ 3 Lies</span></button><button class="mini" id="playc" type="button" title="invite to play chess"><span class="pl-l">♟ play chess</span><span class="pl-s">♟ chess</span></button><button class="mini" id="playt" type="button" title="invite to play tic tac toe"><span class="pl-l">⭕ play tic tac toe</span><span class="pl-s">⭕ XO</span></button></div>
    <div id="vjoin"></div>
+   <div id="mbar"><div class="mrow"><span class="eq" id="meq"><i></i><i></i><i></i></span><span id="mtitle"></span><button class="mini" id="madd" type="button" title="pick another song">🎵 change song</button><button class="mini" id="mrm" type="button" title="remove song for everyone">✕ remove</button></div><div class="mrow"><button class="mini" id="mb10" type="button">⏪ 10s</button><button class="mini" id="mpp" type="button">▶ play</button><button class="mini" id="mf10" type="button">10s ⏩</button><span id="mcur">0:00</span><input type="range" id="mseek" min="0" max="1000" value="0" aria-label="seek"><span id="mdur">--:--</span><span title="volume (only for you)">🔊</span><input type="range" id="mvol" min="0" max="100" aria-label="volume"></div><div class="hint" id="mstat"></div></div>
    <div id="log"><div class="sys">&gt; present day. present time.</div></div>
    <div id="typing"></div>
    <div id="tray"></div>
@@ -208,8 +225,8 @@ footer b{color:var(--teal)}
    <div id="bar">
     <button id="emo" type="button" title="emoji">😀</button><button id="stk" type="button" title="stickers">:)</button>
     <button id="pic" type="button" title="picture">IMG</button>
-    <button id="mic" type="button" title="voice message">🎤</button>
-    <input type="file" id="file" accept="image/*">
+    <button id="mic" type="button" title="voice message">🎤</button><button id="mus" type="button" title="listen to a song together">🎵</button>
+    <input type="file" id="file" accept="image/*"><input type="file" id="mfile" accept="audio/*,.mp3,.m4a,.aac,.wav,.ogg,.opus,.flac">
     <input type="text" id="txt" maxlength="500" placeholder="say something..." autocomplete="off">
     <button id="send" type="button">SEND</button>
    </div>
@@ -489,7 +506,7 @@ function renderFriends(){
   z.onclick=function(){reqs=reqs.filter(function(g){return g!==q});renderFriends()};
   r.appendChild(n);r.appendChild(y);r.appendChild(z);rb.appendChild(r);
  });
- renderGroups();refreshTicks();vcUI();
+ renderGroups();refreshTicks();vcUI();if(mus)musUI();
 }
 
 /* ---------- direct connections (friends) ---------- */
@@ -512,7 +529,7 @@ function wire(c){
   else if(d.t==="ack"){if(typeof d.id==="string"){outbox=outbox.filter(function(e){return!(e.to===id&&e.id===d.id)});saveOB();refreshTicks()}}
   else if(d.t==="gm"){var G=grp(d.gid);if(G&&inG(G,id)){ack(c,d);var gm=safe(d,false);gm.u=id;clearTyper("gc:"+G.id,id);addMsg("gc:"+G.id,gm)}}
   else if(d.t==="gnew"||d.t==="gu"||d.t==="gleave"){gctl(c,d,f)}
-  else if(d.t==="vc"){vcSig(c,d,f)}else if(d.t==="scr"){scrSig(c,d)}else if(d.t==="gvj"||d.t==="gvp"||d.t==="gvh"||d.t==="gvl"){gvSig(c,d)}else if(d.t==="g"&&f&&f.ok&&gameWith===id){if(gready)$("gf").contentWindow.postMessage({gm:"rx",m:d.m},"*");else gq.push(d.m)}
+  else if(d.t==="mu"){musRx(c,d,f)}else if(d.t==="vc"){vcSig(c,d,f)}else if(d.t==="scr"){scrSig(c,d)}else if(d.t==="gvj"||d.t==="gvp"||d.t==="gvh"||d.t==="gvl"){gvSig(c,d)}else if(d.t==="g"&&f&&f.ok&&gameWith===id){if(gready)$("gf").contentWindow.postMessage({gm:"rx",m:d.m},"*");else gq.push(d.m)}
   else if(d.t==="gacc"&&f&&f.ok){var pi=typeof d.gid==="string"&&pendInv[d.gid];if(pi&&pi.id===id&&!gameWith){delete pendInv[d.gid];beep("req");gameOpen(id,true,pi.k)}else c.send({t:"gno"})}
   else if(d.t==="gno"&&gameWith===id){gameClose(false);sys("that invite expired or they are busy")}
  });
@@ -1171,6 +1188,189 @@ $("vcend").onclick=function(){if(gv)gvLeave();else if(dmc)hang()};
 $("ringyes").onclick=dmAccept;
 $("ringno").onclick=hang;
 addEventListener("pagehide",function(){if(gv)gvLeave();if(dmc)hang()});
+
+/* ---------- listen together: share a song and play it in sync ---------- */
+var mus=null,MUS_MAX=25*1024*1024,musVol=+(LS("w97_mvol")||80),musDrag=0;
+if(isNaN(musVol))musVol=80;
+function musPeersKey(k){
+ var ids=[];
+ if(k.indexOf("dm:")===0)ids=[k.slice(3)];
+ else if(k.indexOf("gc:")===0){var G=grp(k.slice(3));if(G)ids=G.members.map(function(m){return m.id})}
+ return ids.filter(function(i){var c=dconn[i];return i!==me.id&&c&&c.open});
+}
+function musPeers(){return mus?musPeersKey(mus.key):[]}
+function musFrom(id){
+ if(!mus)return false;var k=mus.key;
+ if(k.indexOf("dm:")===0)return id===k.slice(3);
+ var G=grp(k.slice(3));return !!(G&&inG(G,id));
+}
+function musSend(d,ids){
+ if(!mus)return;d.t="mu";d.sid=mus.sid;
+ (ids||musPeers()).forEach(function(id){var c=dconn[id];if(c&&c.open)try{c.send(d)}catch(e){}});
+}
+function musClear(){
+ var M=mus;if(!M)return;mus=null;
+ if(M.el){try{M.el.pause();M.el.removeAttribute("src");M.el.load()}catch(e){}}
+ if(M.url)try{URL.revokeObjectURL(M.url)}catch(e){}
+ musUI();
+}
+function musAudio(M,src){
+ var el=new Audio();el.preload="auto";el.src=src;el.volume=Math.max(0,Math.min(1,musVol/100));
+ el.onloadedmetadata=function(){if(mus===M){musApply(true);musUI()}};
+ el.onended=function(){if(mus===M){M.want={p:0,pos:0,t:Date.now()};musUI()}};
+ el.onerror=function(){if(mus===M)sys("this audio file can't be played in your browser")};
+ M.el=el;
+}
+/* make the local player match the shared state */
+function musApply(force){
+ var M=mus;if(!M||!M.el||!M.ready)return;var el=M.el,w=M.want;
+ var t=w.pos+(w.p?(Date.now()-w.t)/1000:0),dur=el.duration;
+ if(isFinite(dur)&&t>dur)t=dur;
+ if(force||Math.abs(el.currentTime-t)>.8){try{el.currentTime=Math.max(0,t)}catch(e){}}
+ if(w.p&&el.paused){M.blocked=0;var p=el.play();if(p&&p.catch)p.catch(function(){if(mus===M){M.blocked=1;musUI()}})}
+ else if(!w.p&&!el.paused)el.pause();
+}
+/* a local action (play / pause / skip / seek): apply it here and tell everyone */
+function musCtl(p,pos){
+ var M=mus;if(!M||!M.ready||!M.el)return;
+ var dur=M.el.duration;pos=Math.max(0,pos);if(isFinite(dur))pos=Math.min(pos,dur);
+ M.want={p:p?1:0,pos:pos,t:Date.now()};musApply(true);
+ musSend({a:"st",p:p?1:0,pos:pos});musUI();
+}
+function musStart(f){
+ var k=active||"";
+ if(k.indexOf("dm:")!==0&&k.indexOf("gc:")!==0){sys("listen together works in direct chats and groups (not rooms)");return}
+ if(!/^audio\//.test(f.type)&&!/\.(mp3|m4a|aac|wav|ogg|oga|opus|flac|webm|weba)$/i.test(f.name)){sys("that doesn't look like an audio file");return}
+ if(f.size>MUS_MAX){sys("song too big, the limit is 25 MB");return}
+ if(!musPeersKey(k).length){sys("nobody is online in this chat right now, so you can't share a song yet");if(k.indexOf("dm:")===0)pingOne(k.slice(3));return}
+ if(mus){musSend({a:"stop"})}musClear();
+ var M={sid:"m"+rnd(7),key:k,owner:me.id,name:clean(f.name.replace(/\.[a-z0-9]+$/i,""),80)||"song",size:f.size,mime:f.type||"audio/mpeg",ready:true,want:{p:0,pos:0,t:Date.now()},pct:0,url:URL.createObjectURL(f)};
+ mus=M;musAudio(M,M.url);musUI();
+ sys("🎵 sharing \""+M.name+"\"...");
+ var fr2=new FileReader();
+ fr2.onload=function(){if(mus===M)musSendFile(M,fr2.result,musPeers())};
+ fr2.onerror=function(){sys("could not read that file");if(mus===M)musClear()};
+ fr2.readAsArrayBuffer(f);
+}
+function musSendFile(M,buf,to){
+ var CH=12288,n=Math.max(1,Math.ceil(buf.byteLength/CH)),i=0,offer={a:"offer",name:M.name,size:buf.byteLength,n:n,mime:M.mime};
+ if(M.key.indexOf("gc:")===0)offer.gid=M.key.slice(3);
+ musSend(offer,to);
+ function busy(live){return live.some(function(id){var dc=dconn[id].dataChannel;return dc&&dc.bufferedAmount>1048576})}
+ function pump(){
+  if(mus!==M)return;
+  var live=to.filter(function(id){var c=dconn[id];return c&&c.open});
+  if(!live.length){M.pct=100;musUI();return}
+  var sent=0,last=M.pct;
+  while(i<n&&sent<64&&!busy(live)){
+   var part=buf.slice(i*CH,Math.min(buf.byteLength,(i+1)*CH)),msg={t:"mu",sid:M.sid,a:"c",i:i,d:part};
+   live.forEach(function(id){try{dconn[id].send(msg)}catch(e){}});i++;sent++;
+  }
+  M.pct=Math.round(i/n*100);if(M.pct!==last)musUI();
+  if(i<n)setTimeout(pump,sent?4:60);
+ }
+ pump();
+}
+function musDone(){
+ var M=mus,R=M.recv;M.recv=null;
+ var mime=/^audio\/[a-z0-9.+-]{2,30}$/i.test(M.mime)?M.mime:"audio/mpeg";
+ M.url=URL.createObjectURL(new Blob(R.parts,{type:mime}));M.ready=true;musAudio(M,M.url);
+ musSend({a:"ready"},[M.owner]);musApply(true);musUI();
+}
+/* messages from the other side */
+function musRx(c,d,f){
+ var id=c.peer,i,b,bl,R;
+ if(typeof d.sid!=="string"||!/^[a-z0-9]{4,12}$/.test(d.sid))return;
+ if(d.a==="offer"){
+  var key;
+  if(d.gid){var G=grp(d.gid);if(!G||!inG(G,id)||!inG(G,me.id))return;key="gc:"+G.id}
+  else{if(!f||!f.ok)return;key="dm:"+id}
+  var size=+d.size,n=+d.n;
+  if(!(size>0&&size<=MUS_MAX)||!(n>=1&&n<=4096&&n%1===0)||n*16300<size)return;
+  musClear();
+  mus={sid:d.sid,key:key,owner:id,name:clean(d.name,80)||"song",size:size,mime:clean(d.mime,40),ready:false,want:{p:0,pos:0,t:Date.now()},recv:{parts:[],got:0,n:n,bytes:0},url:"",el:null};
+  beep("req");
+  if(key===active)sys("🎵 "+nameOf(id)+" shared a song: "+mus.name+" ("+(size/1048576).toFixed(1)+" MB)");
+  else{unread[key]=1;renderFriends()}
+  musUI();return;
+ }
+ if(!mus||mus.sid!==d.sid||!musFrom(id))return;
+ if(d.a==="c"){
+  R=mus.recv;if(!R||mus.owner!==id)return;i=d.i;b=d.d;
+  if(!(typeof i==="number"&&i>=0&&i<R.n&&i%1===0)||R.parts[i])return;
+  if(!b||typeof b!=="object"||typeof b.byteLength!=="number")return;
+  bl=b.byteLength;if(!(bl>0&&bl<=16300))return;
+  R.parts[i]=b;R.got++;R.bytes+=bl;
+  if(R.bytes>mus.size+16300){musClear();sys("that song transfer looked wrong, so it was dropped");return}
+  if(R.got===R.n)musDone();else if(R.got%16===0)musUI();
+ }
+ else if(d.a==="st"){
+  mus.want={p:d.p?1:0,pos:Math.max(0,+d.pos||0),t:Date.now()};
+  if(mus.ready)musApply(!d.h);
+  musUI();
+ }
+ else if(d.a==="ready"){
+  if(mus.owner===me.id&&mus.el)musSend({a:"st",p:mus.el.paused?0:1,pos:mus.el.currentTime},[id]);
+ }
+ else if(d.a==="stop"){
+  var nm=nameOf(id);musClear();sys("🎵 "+nm+" removed the song");
+ }
+}
+/* player UI */
+function musUI(){
+ var M=mus,bar=$("mbar");
+ if(!M){bar.classList.remove("open");return}
+ bar.classList.add("open");
+ var t=$("mtitle");t.textContent="";var b=document.createElement("b");b.textContent=M.name;
+ t.appendChild(document.createTextNode("🎵 "));t.appendChild(b);
+ t.appendChild(document.createTextNode(" · shared by "+(M.owner===me.id?"you":nameOf(M.owner))));
+ var ps=musPeers(),st="";
+ if(M.recv)st="receiving the song... "+Math.round(M.recv.got/M.recv.n*100)+"%";
+ else if(M.owner===me.id&&M.pct<100&&ps.length)st="sending to your friend... "+M.pct+"%";
+ else if(M.blocked)st="your browser blocked autoplay. Tap play to join in";
+ else if(!ps.length)st="⚠ nobody else is connected right now";
+ else st="listening together · anyone can play, pause or skip";
+ $("mstat").textContent=st;
+ $("mpp").disabled=$("mb10").disabled=$("mf10").disabled=$("mseek").disabled=!M.ready;
+ musTick();
+}
+function musTick(){
+ var M=mus;if(!M)return;
+ var el=M.el,dur=el&&isFinite(el.duration)?el.duration:0,cur=el?el.currentTime:0;
+ if(musDrag&&Date.now()-musDrag>2500)musDrag=0;
+ if(!musDrag){$("mcur").textContent=fmtT(cur);$("mseek").value=dur?Math.round(cur/dur*1000):0}
+ $("mdur").textContent=dur?fmtT(dur):"--:--";
+ var pl=!!(el&&!el.paused&&!el.ended);
+ $("mpp").textContent=pl?"⏸ pause":"▶ play";
+ $("meq").className="eq"+(pl?" on":"");
+}
+setInterval(musTick,250);
+/* the owner keeps everyone in sync while the song plays */
+setInterval(function(){
+ if(mus&&mus.owner===me.id&&mus.el&&!mus.el.paused)musSend({a:"st",p:1,pos:mus.el.currentTime,h:1});
+},3000);
+$("mus").onclick=$("madd").onclick=function(){
+ if(!active){sys("pick a friend or group first");return}
+ $("mfile").click();
+};
+$("mfile").onchange=function(){var f=this.files[0];this.value="";if(f)musStart(f)};
+$("mpp").onclick=function(){
+ var M=mus;if(!M||!M.el)return;var el=M.el,end=isFinite(el.duration)&&el.currentTime>=el.duration-.2;
+ musCtl(el.paused,end?0:el.currentTime);
+};
+$("mb10").onclick=function(){if(mus&&mus.el)musCtl(!!mus.want.p,mus.el.currentTime-10)};
+$("mf10").onclick=function(){if(mus&&mus.el)musCtl(!!mus.want.p,mus.el.currentTime+10)};
+$("mseek").oninput=function(){
+ if(!mus||!mus.el||!isFinite(mus.el.duration))return;
+ musDrag=Date.now();$("mcur").textContent=fmtT(this.value/1000*mus.el.duration);
+};
+$("mseek").onchange=function(){
+ musDrag=0;if(!mus||!mus.el||!isFinite(mus.el.duration))return;
+ musCtl(!!mus.want.p,this.value/1000*mus.el.duration);
+};
+$("mrm").onclick=function(){if(!mus)return;musSend({a:"stop"});musClear();sys("🎵 song removed")};
+$("mvol").value=musVol;
+$("mvol").oninput=function(){musVol=+this.value;LS("w97_mvol",String(musVol));if(mus&&mus.el)mus.el.volume=musVol/100};
 
 /* ---------- start ---------- */
 function start(){
