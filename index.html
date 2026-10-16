@@ -392,10 +392,8 @@ function renderFriends(){
   var r=document.createElement("div");r.className="f"+(active==="dm:"+f.id?" on":"")+(unread["dm:"+f.id]?" un":"");
   var d=document.createElement("span");d.className="dot"+(online[f.id]?" on":"");
   var n=document.createElement("span");n.className="n";n.textContent=f.name+(f.ok?"":" (pending)");
-  var x=document.createElement("button");x.className="mini";x.type="button";x.textContent="✕";x.title="remove";
-  x.onclick=function(e){e.stopPropagation();if(confirm("Remove "+f.name+"?")){friends=friends.filter(function(g){return g!==f});outbox=outbox.filter(function(e){return e.to!==f.id});saveOB();save();renderFriends()}};
   r.onclick=function(){open("dm:"+f.id);pingOne(f.id)};
-  var aw=document.createElement("span");aw.className="avw";aw.appendChild(avatar(f.id));aw.appendChild(d);r.appendChild(aw);r.appendChild(n);r.appendChild(x);box.appendChild(r);
+  var aw=document.createElement("span");aw.className="avw";aw.appendChild(avatar(f.id));aw.appendChild(d);r.appendChild(aw);r.appendChild(n);box.appendChild(r);
  });
  var rb=$("reqs");rb.textContent="";
  reqs.forEach(function(q){
