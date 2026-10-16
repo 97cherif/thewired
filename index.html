@@ -45,7 +45,7 @@ button:hover{background:var(--teal);color:#000}
 .dot{width:9px;height:9px;border-radius:50%;background:#33474a;flex:none}
 .dot.on{background:#4dff9a;box-shadow:0 0 6px #4dff9a}
 .hint{color:var(--soft);font-size:12px}
-#top{padding:8px 14px;border-bottom:1px solid var(--dim);color:var(--soft);display:flex;gap:10px;align-items:center}
+#top{flex-wrap:wrap;padding:8px 14px;border-bottom:1px solid var(--dim);color:var(--soft);display:flex;gap:10px;align-items:center}
 #top b{color:var(--teal);font-weight:600}
 #log{flex:1;overflow-y:auto;padding:12px 14px;display:flex;flex-direction:column;gap:9px}
 .m{max-width:min(85%,760px);border:1px solid var(--dim);background:var(--panel);padding:6px 9px;word-break:break-word}
@@ -123,6 +123,23 @@ footer b{color:var(--teal)}
 #gmod.open{display:flex}
 #gbox{background:var(--panel);border:1px solid var(--teal);width:100%;max-width:380px;max-height:90%;overflow:auto;padding:12px;display:flex;flex-direction:column;gap:8px}
 .pk{display:flex;align-items:center;gap:8px;padding:4px;cursor:pointer}
+#vcbar{display:none;align-items:center;gap:8px;flex-wrap:wrap;padding:6px 14px;border-bottom:1px solid var(--teal);background:var(--panel);font-size:12px;color:var(--soft)}
+#vcbar.open{display:flex}
+#vcinfo b{color:var(--teal);font-weight:600}
+#vcpeople{flex:1;display:flex;gap:6px;flex-wrap:wrap;align-items:center;min-width:0}
+.vp{display:flex;align-items:center;gap:5px;padding:2px 8px 2px 3px;border:1px solid var(--dim);border-radius:14px;background:var(--field);color:var(--text);opacity:.5;transition:box-shadow .1s,border-color .1s}
+.vp.on{opacity:1}
+.vp.sp{border-color:#4dff9a;box-shadow:0 0 8px #4dff9a}
+#vcend{border-color:var(--red);color:var(--red)}#vcend:hover{background:var(--red);color:#000}
+#vjoin{display:none;align-items:center;gap:8px;padding:6px 14px;border-bottom:1px dashed var(--teal);font-size:12px;color:var(--soft)}
+#vjoin.open{display:flex}#vjoin span{flex:1}
+#ring{position:fixed;inset:0;z-index:80;background:rgba(0,0,0,.82);display:none;align-items:center;justify-content:center;padding:14px}
+#ring.open{display:flex}
+#ringbox{background:var(--panel);border:1px solid var(--teal);width:100%;max-width:320px;padding:22px 16px;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;animation:rg 1.2s infinite}
+@keyframes rg{0%,100%{box-shadow:0 0 0 0 rgba(111,227,210,.5)}50%{box-shadow:0 0 22px 4px rgba(111,227,210,.5)}}
+#ringtxt b{color:var(--teal)}
+#ringyes{border-color:#4dff9a;color:#4dff9a}#ringyes:hover{background:#4dff9a;color:#000}
+#ringno{border-color:var(--red);color:var(--red)}#ringno:hover{background:var(--red);color:#000}
 </style>
 </head>
 <body>
@@ -133,6 +150,7 @@ footer b{color:var(--teal)}
   <button id="snd" type="button" title="sound on/off" aria-label="sound">🔔</button>
   <span id="status" class="hint">connecting...</span>
  </header>
+ <div id="vcbar"><span id="vcinfo"></span><span id="vcpeople"></span><button class="mini" id="vcmute" type="button">🎤 mute</button><button class="mini" id="vcend" type="button">📵 hang up</button></div>
  <div id="main">
   <aside id="side">
    <section>
@@ -165,7 +183,8 @@ footer b{color:var(--teal)}
    </section>
   </aside>
   <div id="chat">
-   <div id="top"><span id="topt">&gt; pick a friend or join a room</span><button class="mini" id="gman" type="button">👥 group</button><button class="mini" id="play" type="button" title="invite to play"><span class="pl-l">▶ play 3 Lies & 1 Truth</span><span class="pl-s">▶ 3 Lies</span></button><button class="mini" id="playc" type="button" title="invite to play chess"><span class="pl-l">♟ play chess</span><span class="pl-s">▶ 3 Lies</span></button></div>
+   <div id="top"><span id="topt">&gt; pick a friend or join a room</span><button class="mini" id="gman" type="button">👥 group</button><button class="mini" id="vcb" type="button" style="display:none"></button><button class="mini" id="play" type="button" title="invite to play"><span class="pl-l">▶ play 3 Lies & 1 Truth</span><span class="pl-s">▶ 3 Lies</span></button><button class="mini" id="playc" type="button" title="invite to play chess"><span class="pl-l">♟ play chess</span><span class="pl-s">▶ 3 Lies</span></button></div>
+   <div id="vjoin"></div>
    <div id="log"><div class="sys">&gt; present day. present time.</div></div>
    <div id="typing"></div>
    <div id="tray"></div>
@@ -183,6 +202,8 @@ footer b{color:var(--teal)}
   </div>
  </div>
  <div id="gov"><div id="gbar"><span id="gtitle"></span><button class="mini" id="gx" type="button">✕ leave game</button></div><iframe id="gf" title="3 Lies & 1 Truth" sandbox="allow-scripts"></iframe></div>
+ <div id="ring"><div id="ringbox"><div id="ringav"></div><div id="ringtxt"></div><div class="row"><button id="ringyes" type="button">📞 accept</button><button id="ringno" type="button">✕ decline</button></div></div></div>
+ <div id="vcaudio" style="display:none"></div>
  <div id="gmod"><div id="gbox"><h2 id="gmt">NEW GROUP</h2><input type="text" id="gname" maxlength="20" placeholder="group name"><div id="gmem"></div><div id="gpick"></div><div class="row"><button id="gok" type="button">OK</button><button id="gcx" type="button">CANCEL</button><button id="gleave" type="button" style="margin-left:auto;color:var(--red)">LEAVE</button></div></div></div>
  <footer>made by <b>97CHERIF</b></footer>
 </div>
@@ -259,7 +280,7 @@ function renderGroups(){
  groups.forEach(function(g){
   var r=document.createElement("div");r.className="f"+(active==="gc:"+g.id?" on":"")+(unread["gc:"+g.id]?" un":"");
   var a=document.createElement("span");a.className="gav";a.textContent=g.name.slice(0,2).toUpperCase();a.style.borderColor="hsl("+(hue(g.id)%360)+",60%,55%)";
-  var n=document.createElement("span");n.className="n";n.textContent=g.name+" ("+g.members.length+")";
+  var n=document.createElement("span");n.className="n";n.textContent=g.name+" ("+g.members.length+")"+vcTag(g.id);
   r.onclick=function(){open("gc:"+g.id)};r.appendChild(a);r.appendChild(n);box.appendChild(r);
  });
 }
@@ -383,7 +404,7 @@ function open(key){
   if(f&&!online[f.id])sys("they are offline. your messages are queued and get delivered when they come online.")}
  else if(key.indexOf("gc:")===0){var gg=grp(key.slice(3));b.textContent=gg?gg.name:"?";top.appendChild(document.createTextNode("> group "));top.appendChild(b);top.appendChild(document.createTextNode(gg?" · "+gg.members.length+" members":""))}
  else{b.textContent=key.slice(5);top.appendChild(document.createTextNode("> room "));top.appendChild(b);var c=document.createElement("span");c.id="cnt";top.appendChild(c);updCount()}
- (chats[key]||[]).forEach(draw);renderFriends();showTyping();
+ (chats[key]||[]).forEach(draw);renderFriends();showTyping();vcUI();
 }
 function renderFriends(){
  var box=$("flist");box.textContent="";
@@ -407,7 +428,7 @@ function renderFriends(){
   z.onclick=function(){reqs=reqs.filter(function(g){return g!==q});renderFriends()};
   r.appendChild(n);r.appendChild(y);r.appendChild(z);rb.appendChild(r);
  });
- renderGroups();refreshTicks();
+ renderGroups();refreshTicks();vcUI();
 }
 
 /* ---------- direct connections (friends) ---------- */
@@ -416,7 +437,7 @@ function wire(c){
  if(c.open)go();else c.on("open",go);
  c.on("data",function(d){
   if(!d||typeof d!=="object")return;var id=c.peer,f=fr(id);
-  if(d.t==="hi"){if(f){f.name=clean(d.n,16)||f.name;save();if(!f.ok)c.send({t:"fr",n:me.name})}renderFriends();flush(id,true)}
+  if(d.t==="hi"){if(f){f.name=clean(d.n,16)||f.name;save();if(!f.ok)c.send({t:"fr",n:me.name})}renderFriends();flush(id,true);voiceHi(id)}
   else if(d.t==="fr"){
    if(f){f.ok=true;f.name=clean(d.n,16)||f.name;save();c.send({t:"fa",n:me.name})}
    else if(!reqs.some(function(q){return q.id===id})){reqs.push({id:id,name:clean(d.n,16)||"someone"});beep("req")}
@@ -430,12 +451,12 @@ function wire(c){
   else if(d.t==="ack"){if(typeof d.id==="string"){outbox=outbox.filter(function(e){return!(e.to===id&&e.id===d.id)});saveOB();refreshTicks()}}
   else if(d.t==="gm"){var G=grp(d.gid);if(G&&inG(G,id)){ack(c,d);var gm=safe(d,false);gm.u=id;clearTyper("gc:"+G.id,id);addMsg("gc:"+G.id,gm)}}
   else if(d.t==="gnew"||d.t==="gu"||d.t==="gleave"){gctl(c,d,f)}
-  else if(d.t==="g"&&f&&f.ok&&gameWith===id){if(gready)$("gf").contentWindow.postMessage({gm:"rx",m:d.m},"*");else gq.push(d.m)}
+  else if(d.t==="vc"){vcSig(c,d,f)}else if(d.t==="gvj"||d.t==="gvp"||d.t==="gvh"||d.t==="gvl"){gvSig(c,d)}else if(d.t==="g"&&f&&f.ok&&gameWith===id){if(gready)$("gf").contentWindow.postMessage({gm:"rx",m:d.m},"*");else gq.push(d.m)}
   else if(d.t==="gacc"&&f&&f.ok){var pi=typeof d.gid==="string"&&pendInv[d.gid];if(pi&&pi.id===id&&!gameWith){delete pendInv[d.gid];beep("req");gameOpen(id,true,pi.k)}else c.send({t:"gno"})}
   else if(d.t==="gno"&&gameWith===id){gameClose(false);sys("that invite expired or they are busy")}
  });
  var gone=function(){if(gameWith===c.peer&&gready){try{$("gf").contentWindow.postMessage({gm:"gone"},"*")}catch(e){}}
-  if(dconn[c.peer]===c){delete dconn[c.peer];delete online[c.peer];renderFriends()}};
+  if(dconn[c.peer]===c){delete dconn[c.peer];delete online[c.peer];vcGone(c.peer);renderFriends()}};
  c.on("close",gone);c.on("error",gone);
 }
 function pingOne(id){
@@ -783,6 +804,242 @@ $("bimp").onclick=function(){
  }catch(e){alert("That backup code is not valid.")}
 };
 
+/* ---------- voice: DM calls (ringing) + group voice (click to join) ---------- */
+var dmc=null,gv=null,vcIn={},spk={},sw={},vstate={muted:false},ringT=null,dmT=null,vcClock=null;
+var AUDIO_C={echoCancellation:true,noiseSuppression:true,autoGainControl:true};
+function vcBusy(){return !!(dmc||gv)}
+function stopStream(s){if(s)s.getTracks().forEach(function(t){try{t.stop()}catch(e){}})}
+function getMic(ok,fail){
+ if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia||!window.RTCPeerConnection){sys("voice calls are not supported on this browser");if(fail)fail();return}
+ navigator.mediaDevices.getUserMedia({audio:AUDIO_C,video:false}).then(function(st){vstate.muted=false;ok(st)},function(){sys("microphone blocked. allow it in your browser settings.");if(fail)fail()});
+}
+function callNote(key,text,loud){
+ var m=safe({n:"📞 call log",x:text,ts:Date.now(),id:rnd(8)},false);addMsg(key,m,!loud);
+}
+function playRemote(id,stream){
+ var box=$("vcaudio"),a=box.querySelector('[data-p="'+id+'"]');
+ if(!a){a=document.createElement("audio");a.setAttribute("data-p",id);a.autoplay=true;a.setAttribute("playsinline","");box.appendChild(a)}
+ a.srcObject=stream;var p=a.play();if(p&&p.catch)p.catch(function(){});
+ watchSpeak(id,stream);
+}
+function dropRemote(id){var a=$("vcaudio").querySelector('[data-p="'+id+'"]');if(a){a.srcObject=null;a.remove()}stopSpeak(id)}
+function markSpeak(id){var e=document.querySelectorAll('#vcpeople [data-p="'+id+'"]');for(var i=0;i<e.length;i++)e[i].classList.toggle("sp",!!spk[id])}
+function watchSpeak(id,stream){
+ stopSpeak(id);var a=actx();if(!a||!a.createMediaStreamSource)return;
+ try{
+  var src=a.createMediaStreamSource(stream),an=a.createAnalyser();an.fftSize=256;src.connect(an);
+  var buf=new Uint8Array(an.frequencyBinCount);
+  var h=setInterval(function(){an.getByteFrequencyData(buf);var s=0;for(var i=0;i<buf.length;i++)s+=buf[i];var on=s/buf.length>14;if(!!spk[id]!==on){spk[id]=on;markSpeak(id)}},150);
+  sw[id]={h:h,src:src};
+ }catch(e){}
+}
+function stopSpeak(id){var w=sw[id];if(w){clearInterval(w.h);try{w.src.disconnect()}catch(e){}delete sw[id]}if(spk[id]){delete spk[id];markSpeak(id)}}
+function attachCall(call,id,gone){
+ call.on("stream",function(rs){playRemote(id,rs)});
+ call.on("close",function(){gone(call)});call.on("error",function(){gone(call)});
+ try{var pc=call.peerConnection;if(pc)pc.addEventListener("iceconnectionstatechange",function(){if(pc.iceConnectionState==="failed"||pc.iceConnectionState==="closed")gone(call)})}catch(e){}
+}
+function ringStart(kind,f){
+ ringStop();if(muted&&kind==="in")return;
+ var go=kind==="in"
+  ?function(){tone(880,0,.16,"sine",.09);tone(660,.2,.16,"sine",.09);tone(880,.6,.16,"sine",.09);tone(660,.8,.16,"sine",.09)}
+  :function(){tone(440,0,.9,"sine",.035)};
+ go();ringT=setInterval(go,kind==="in"?2400:3200);
+ if(kind==="in"&&navigator.vibrate)try{navigator.vibrate([400,200,400])}catch(e){}
+}
+function ringStop(){clearInterval(ringT);ringT=null;if(navigator.vibrate)try{navigator.vibrate(0)}catch(e){}}
+function vcSend(id,a){var c=dconn[id];if(c&&c.open)try{c.send({t:"vc",a:a})}catch(e){}}
+function vcStart(){clearInterval(vcClock);vcClock=setInterval(vcTick,1000)}
+function vcTick(){var t=$("vct"),s=dmc?dmc.t0:gv?gv.t0:0;if(t&&s)t.textContent=fmtT((Date.now()-s)/1000)}
+
+/* --- DM call (rings) --- */
+function startDm(id){
+ var f=fr(id),c=dconn[id];
+ if(!f||!f.ok){sys("they need to accept your friend request first");return}
+ if(vcBusy()){sys("you are already in a call. hang up first");return}
+ if(!c||!c.open){sys("they are offline, you can't call right now");pingOne(id);return}
+ var d={id:id,st:"out",stream:null,call:null};dmc=d;vcUI();
+ getMic(function(st){
+  if(dmc!==d){stopStream(st);return}
+  c=dconn[id];if(!c||!c.open){stopStream(st);dmEnd("📞 call failed, they went offline");return}
+  d.stream=st;watchSpeak(me.id,st);c.send({t:"vc",a:"ring"});ringStart("out");
+  dmT=setTimeout(function(){if(dmc===d&&d.st==="out"){vcSend(id,"cancel");dmEnd("📞 no answer")}},45000);
+ },function(){if(dmc===d)dmEnd(null)});
+}
+function vcSig(c,d,f){
+ var id=c.peer;if(!f||!f.ok)return;var a=d.a;
+ if(a==="ring"){
+  if(dmc&&dmc.id===id&&dmc.st==="out"){ /* both called each other: lower id stays the caller */
+   if(me.id<id)return;var o=dmc;dmc=null;clearTimeout(dmT);ringStop();stopStream(o.stream);stopSpeak(me.id);
+  }
+  if(vcBusy()){try{c.send({t:"vc",a:"busy"})}catch(e){}callNote("dm:"+id,"📞 missed call from "+f.name+" (you were busy)",true);return}
+  var n=dmc={id:id,st:"in",stream:null,call:null};
+  $("ringav").textContent="";$("ringav").appendChild(avatar(id,"lg"));$("ringtxt").textContent="";
+  var b=document.createElement("b");b.textContent=f.name;$("ringtxt").appendChild(b);$("ringtxt").appendChild(document.createTextNode(" is calling you..."));
+  $("ring").classList.add("open");ringStart("in");vcUI();
+  dmT=setTimeout(function(){if(dmc===n&&n.st==="in"){dmEnd("📞 missed call from "+f.name,true)}},50000);
+ }
+ else if(a==="cancel"){if(dmc&&dmc.id===id&&dmc.st==="in")dmEnd("📞 missed call from "+f.name,true)}
+ else if(a==="acc"){
+  if(dmc&&dmc.id===id&&dmc.st==="out"&&dmc.stream){
+   clearTimeout(dmT);ringStop();dmc.st="live";dmc.t0=Date.now();
+   var call=peer.call(id,dmc.stream,{metadata:{k:"dm"}});dmc.call=call;
+   attachCall(call,id,function(x){if(dmc&&dmc.call===x)dmEnd("📞 call ended")});vcStart();vcUI();
+  }
+ }
+ else if(a==="no"){if(dmc&&dmc.id===id&&dmc.st==="out")dmEnd("📞 "+f.name+" declined the call")}
+ else if(a==="busy"){if(dmc&&dmc.id===id&&dmc.st==="out")dmEnd("📞 "+f.name+" is busy")}
+ else if(a==="end"){if(dmc&&dmc.id===id&&dmc.st==="live")dmEnd("📞 call ended")}
+}
+function dmAccept(){
+ var d=dmc;if(!d||d.st!=="in"||d.acc)return;d.acc=1;ringStop();clearTimeout(dmT);
+ getMic(function(st){
+  if(dmc!==d){stopStream(st);return}
+  d.stream=st;d.st="live";d.t0=Date.now();watchSpeak(me.id,st);vcSend(d.id,"acc");
+  $("ring").classList.remove("open");vcStart();vcUI();
+  d.wait=setTimeout(function(){if(dmc===d&&!d.call)dmEnd("📞 call failed to connect")},15000);
+ },function(){if(dmc===d){vcSend(d.id,"no");dmEnd(null)}});
+}
+function dmEnd(note,loud){
+ var d=dmc;if(!d)return;dmc=null;clearTimeout(dmT);clearTimeout(d.wait);clearInterval(vcClock);ringStop();
+ try{if(d.call)d.call.close()}catch(e){}
+ stopStream(d.stream);dropRemote(d.id);stopSpeak(me.id);$("ring").classList.remove("open");
+ if(note){if(d.t0&&/ended/.test(note))note+=" · "+fmtT((Date.now()-d.t0)/1000);callNote("dm:"+d.id,note,loud)}
+ vcUI();
+}
+function hang(){
+ var d=dmc;if(!d)return;
+ if(d.st==="out"){vcSend(d.id,"cancel");dmEnd("📞 you cancelled the call")}
+ else if(d.st==="in"){vcSend(d.id,"no");dmEnd("📞 you declined a call")}
+ else{vcSend(d.id,"end");dmEnd("📞 call ended")}
+}
+
+/* --- group voice (click to join, everyone connects to everyone) --- */
+function gvJoin(gid){
+ var G=grp(gid);if(!G)return;
+ if(gv&&gv.gid===gid){sys("you are already in this voice chat");return}
+ if(vcBusy()){sys("you are already in a call. leave it first");return}
+ if(Object.keys(vcIn[gid]||{}).length>=8){sys("voice chat is full (8 max)");return}
+ var tok={};gv=tok;vcUI();
+ getMic(function(st){
+  if(gv!==tok){stopStream(st);return}
+  gv={gid:gid,stream:st,calls:{},t0:Date.now()};watchSpeak(me.id,st);
+  (vcIn[gid]=vcIn[gid]||{})[me.id]=me.name;
+  G.members.forEach(function(m){if(m.id===me.id)return;var c=dconn[m.id];if(c&&c.open)try{c.send({t:"gvj",gid:gid,n:me.name})}catch(e){}else pingOne(m.id)});
+  vcStart();vcUI();renderGroups();beep("req");
+ },function(){if(gv===tok){gv=null;vcUI()}});
+}
+function gvCall(id){
+ if(!gv||!gv.calls||gv.calls[id]||!peer)return;
+ var call=peer.call(id,gv.stream,{metadata:{k:"gv",gid:gv.gid}});if(call)gvAdd(id,call,true);
+}
+function gvAdd(id,call,out){
+ var old=gv.calls[id];
+ if(old){ /* duplicate: keep the call started by the lower id */
+  var ni=out?me.id:id,oi=old._out?me.id:id;
+  if(ni>oi){try{call.close()}catch(e){}return}
+  delete gv.calls[id];try{old.close()}catch(e){}
+ }
+ call._out=out;gv.calls[id]=call;
+ if(!out)call.answer(gv.stream);
+ attachCall(call,id,function(c){if(gv&&gv.calls&&gv.calls[id]===c){delete gv.calls[id];dropRemote(id);vcUI()}});
+ vcUI();
+}
+function gvDrop(id){if(!gv||!gv.calls)return;var c=gv.calls[id];delete gv.calls[id];if(c)try{c.close()}catch(e){}dropRemote(id)}
+function gvLeave(){
+ var g=gv;if(!g)return;gv=null;clearInterval(vcClock);
+ if(!g.calls){vcUI();return}
+ var G=grp(g.gid);if(vcIn[g.gid])delete vcIn[g.gid][me.id];
+ if(G)G.members.forEach(function(m){var c=dconn[m.id];if(m.id!==me.id&&c&&c.open)try{c.send({t:"gvl",gid:g.gid})}catch(e){}});
+ Object.keys(g.calls).forEach(function(id){try{g.calls[id].close()}catch(e){}dropRemote(id)});
+ stopStream(g.stream);stopSpeak(me.id);vcUI();renderGroups();
+}
+function gvSig(c,d){
+ var id=c.peer,G=grp(String(d.gid||""));if(!G||!inG(G,id)||!inG(G,me.id))return;
+ var m=vcIn[G.id]=vcIn[G.id]||{},was=Object.keys(m).length,mine=gv&&gv.calls&&gv.gid===G.id;
+ if(d.t==="gvl"){delete m[id];if(mine)gvDrop(id)}
+ else{
+  m[id]=clean(d.n,16)||nameOf(id);
+  if(mine){
+   if(d.t==="gvj"){gvDrop(id);try{c.send({t:"gvp",gid:G.id,n:me.name})}catch(e){}}
+   else if(!gv.calls[id])gvCall(id); /* gvp or gvh: connect if we are not yet */
+  }else if(d.t==="gvj"&&!was){callNote("gc:"+G.id,"🎙 "+m[id]+" started a voice chat. press 🎙 voice to join.",true)}
+ }
+ vcUI();renderGroups();
+}
+function voiceHi(id){
+ var c=dconn[id];if(!c||!c.open||!gv||!gv.calls)return;
+ var G=grp(gv.gid);if(G&&inG(G,id))try{c.send({t:"gvh",gid:gv.gid,n:me.name})}catch(e){}
+}
+function vcGone(id){
+ var ch=false;
+ Object.keys(vcIn).forEach(function(g){if(vcIn[g][id]&&!(gv&&gv.calls&&gv.gid===g&&gv.calls[id])){delete vcIn[g][id];ch=true}});
+ if(dmc&&dmc.id===id&&(dmc.st==="out"||dmc.st==="in"))dmEnd(dmc.st==="in"?"📞 missed call":"📞 call failed, they went offline",dmc.st==="in");
+ if(ch){vcUI();renderGroups()}
+}
+function onCall(call){
+ var id=call.peer,md=call.metadata||{};
+ if(md.k==="dm"){
+  var d=dmc;
+  if(d&&d.id===id&&d.st==="live"&&d.stream&&!d.call){
+   d.call=call;clearTimeout(d.wait);call.answer(d.stream);
+   attachCall(call,id,function(x){if(dmc&&dmc.call===x)dmEnd("📞 call ended")});
+  }else try{call.close()}catch(e){}
+ }else if(md.k==="gv"){
+  var G=grp(String(md.gid||""));
+  if(!gv||!gv.calls||!G||gv.gid!==G.id||!inG(G,id)||!inG(G,me.id)){try{call.close()}catch(e){}return}
+  gvAdd(id,call,false);
+ }else try{call.close()}catch(e){}
+}
+function vcTag(gid){var n=Object.keys(vcIn[gid]||{}).length;return n?" 🎙"+n:""}
+
+/* --- voice UI --- */
+function chip(id,name,on){
+ var s=document.createElement("span");s.className="vp"+(on?" on":"")+(spk[id]?" sp":"");s.setAttribute("data-p",id);
+ s.appendChild(avatar(id,"sm"));s.appendChild(document.createTextNode(name));return s;
+}
+function vcUI(){
+ var bar=$("vcbar"),info=$("vcinfo"),pp=$("vcpeople"),shown=(dmc&&dmc.st!=="in")||(gv&&gv.calls);
+ if(!shown)bar.classList.remove("open");
+ else{
+  bar.classList.add("open");info.textContent="";pp.textContent="";
+  var b=document.createElement("b"),t=document.createElement("span");t.id="vct";
+  if(dmc){
+   var f=fr(dmc.id),nm=f?f.name:"friend";b.textContent=nm;
+   info.appendChild(document.createTextNode(dmc.st==="out"?"📞 calling ":"📞 in call with "));info.appendChild(b);
+   if(dmc.st==="live"){info.appendChild(document.createTextNode(" · "));info.appendChild(t);t.textContent=fmtT((Date.now()-dmc.t0)/1000)}
+   else info.appendChild(document.createTextNode("..."));
+   pp.appendChild(chip(me.id,"you",true));pp.appendChild(chip(dmc.id,nm,dmc.st==="live"&&!!dmc.call));
+  }else{
+   var G=grp(gv.gid);b.textContent=G?G.name:"group";
+   info.appendChild(document.createTextNode("🎙 voice · "));info.appendChild(b);info.appendChild(document.createTextNode(" · "));info.appendChild(t);t.textContent=fmtT((Date.now()-gv.t0)/1000);
+   pp.appendChild(chip(me.id,"you",true));
+   var ids=Object.keys(vcIn[gv.gid]||{});Object.keys(gv.calls).forEach(function(i){if(ids.indexOf(i)<0)ids.push(i)});
+   ids.forEach(function(i){if(i!==me.id)pp.appendChild(chip(i,nameOf(i)==="anon"?(vcIn[gv.gid]||{})[i]||"anon":nameOf(i),!!gv.calls[i]))});
+  }
+  $("vcmute").textContent=vstate.muted?"🔇 unmute":"🎤 mute";$("vcend").textContent=dmc&&dmc.st==="out"?"✕ cancel":gv?"📵 leave":"📵 hang up";
+ }
+ var k=active||"",vb=$("vcb"),vj=$("vjoin");vj.classList.remove("open");
+ if(k.indexOf("dm:")===0){vb.style.display="inline-block";vb.textContent="📞 call"}
+ else if(k.indexOf("gc:")===0){
+  var gid=k.slice(3),inHere=gv&&gv.gid===gid,names=Object.keys(vcIn[gid]||{}).map(function(i){return i===me.id?"you":(nameOf(i)==="anon"?vcIn[gid][i]:nameOf(i))});
+  vb.style.display="inline-block";vb.textContent=inHere?"🎙 in voice":names.length?"🎙 join voice":"🎙 start voice";
+  if(!inHere&&names.length){
+   vj.textContent="";var s=document.createElement("span");s.textContent="🎙 voice chat is live: "+names.join(", ");vj.appendChild(s);
+   var jb=document.createElement("button");jb.type="button";jb.textContent="JOIN VOICE";jb.onclick=function(){gvJoin(gid)};vj.appendChild(jb);vj.classList.add("open");
+  }
+ }else vb.style.display="none";
+}
+$("vcb").onclick=function(){var k=active||"";if(k.indexOf("dm:")===0)startDm(k.slice(3));else if(k.indexOf("gc:")===0)gvJoin(k.slice(3))};
+$("vcmute").onclick=function(){
+ vstate.muted=!vstate.muted;var s=dmc&&dmc.stream||gv&&gv.stream;
+ if(s)s.getAudioTracks().forEach(function(t){t.enabled=!vstate.muted});vcUI();
+};
+$("vcend").onclick=function(){if(gv)gvLeave();else if(dmc)hang()};
+$("ringyes").onclick=dmAccept;
+$("ringno").onclick=hang;
+addEventListener("pagehide",function(){if(gv)gvLeave();if(dmc)hang()});
+
 /* ---------- start ---------- */
 function start(){
  if(!window.Peer){$("status").textContent="could not load PeerJS";return}
@@ -792,7 +1049,7 @@ function start(){
   var m=location.hash.match(/add=(w97-[a-z0-9]+)/);
   if(m){history.replaceState(null,"",location.pathname);if(m[1]!==me.id&&!fr(m[1])&&confirm("Add this person as a friend?"))addFriend(m[1])}
  });
- peer.on("connection",wire);
+ peer.on("connection",wire);peer.on("call",onCall);
  peer.on("disconnected",function(){$("status").textContent="reconnecting...";try{peer.reconnect()}catch(e){}});
  peer.on("error",function(e){
   if(e.type==="unavailable-id")$("status").textContent="this ID is open in another tab";
