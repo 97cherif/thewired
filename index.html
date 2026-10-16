@@ -70,6 +70,12 @@ input[type=file]{display:none}
 #rbar{display:none;align-items:center;gap:8px;padding:6px 14px;border-top:1px solid var(--dim);background:var(--panel);font-size:12px;color:var(--soft)}
 #rbar span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 #rbar b{color:var(--teal)}
+#pfmod{position:fixed;inset:0;z-index:70;background:rgba(0,0,0,.75);display:none;align-items:center;justify-content:center;padding:14px}
+#pfmod.open{display:flex}
+#pfbox{background:var(--panel);border:1px solid var(--teal);width:100%;max-width:340px;padding:14px;display:flex;flex-direction:column;gap:10px}
+#pfprev{display:flex;justify-content:center}
+#pfprev .av{width:112px;height:112px}
+#pfhue{width:100%}
 #scrbox{display:none;flex-direction:column;gap:6px;padding:6px 14px;border-bottom:1px solid var(--teal);background:#02080b}
 #scrbox.open{display:flex}
 .stile{position:relative;border:1px solid var(--dim)}
@@ -164,6 +170,7 @@ footer b{color:var(--teal)}
     <h2>YOU</h2>
     <div class="row"><span id="youav"></span><input type="text" id="name" maxlength="16" placeholder="your handle" aria-label="your handle"></div>
     <div class="row"><button class="mini" id="cpid" type="button">copy my ID</button><button class="mini" id="cplink" type="button">copy invite link</button><button class="mini" id="tzb" type="button">🕐 clock</button></div>
+    <div class="row"><button class="mini" id="pfb" type="button">🖼 change picture</button></div>
     <div class="hint" id="myid" style="margin-top:4px;word-break:break-all"></div>
    </section>
    <section>
@@ -212,6 +219,7 @@ footer b{color:var(--teal)}
  <div id="ring"><div id="ringbox"><div id="ringav"></div><div id="ringtxt"></div><div class="row"><button id="ringyes" type="button">📞 accept</button><button id="ringno" type="button">✕ decline</button></div></div></div>
  <div id="vcaudio" style="display:none"></div>
  <div id="gmod"><div id="gbox"><h2 id="gmt">NEW GROUP</h2><input type="text" id="gname" maxlength="20" placeholder="group name"><div id="gmem"></div><div id="gpick"></div><div class="row"><button id="gok" type="button">OK</button><button id="gcx" type="button">CANCEL</button><button id="gleave" type="button" style="margin-left:auto;color:var(--red)">LEAVE</button></div></div></div>
+ <div id="pfmod"><div id="pfbox"><h2>PROFILE PICTURE</h2><div id="pfprev"></div><div class="hint">Pick a color for the Lain picture, or upload your own photo.</div><input type="range" id="pfhue" min="0" max="359" aria-label="Lain color"><div class="row"><button id="pfup" type="button">📷 upload picture</button><button id="pfrst" type="button">↺ reset</button></div><input type="file" id="pffile" accept="image/*" style="display:none"><div class="row"><button id="pfok" type="button">DONE</button></div></div></div>
  <footer>made by <b>97CHERIF</b></footer>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
@@ -244,9 +252,56 @@ var S={"lain": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAcFBQYFB
 
 /* ---------- avatars: lain + a different colour filter per person ---------- */
 function hue(id){var h=0;id=String(id||"?");for(var i=0;i<id.length;i++)h=(h*31+id.charCodeAt(i))>>>0;return h}
-function avatar(id,cls){var im=document.createElement("img"),h=hue(id);im.className="av"+(cls?" "+cls:"");im.src=S.lain;im.alt="";
- im.style.filter="hue-rotate("+(h%360)+"deg) saturate("+(1+(h>>8)%6*.2).toFixed(2)+") brightness("+(.9+((h>>12)%4)*.07).toFixed(2)+")";return im}
-$("youav").appendChild(avatar(me.id,"lg"));
+var PF={};try{PF=JSON.parse(LS("w97_pf"))||{}}catch(e){}
+function cleanPf(p){
+ if(!p||typeof p!=="object")return null;
+ if(p.k==="c"){var h=+p.h;return isNaN(h)?null:{k:"c",h:((Math.round(h)%360)+360)%360}}
+ if(p.k==="i"&&typeof p.d==="string"&&p.d.length<24000&&/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+\/=]+$/.test(p.d))return{k:"i",d:p.d};
+ return null;
+}
+me.pf=cleanPf(me.pf);
+function pfOf(id){return id===me.id?me.pf:(PF[id]||null)}
+function paintAv(im){
+ var id=im.getAttribute("data-u"),p=pfOf(id);
+ if(p&&p.k==="i"){im.src=p.d;im.style.filter="none";return}
+ im.src=S.lain;
+ if(p&&p.k==="c"){im.style.filter="hue-rotate("+p.h+"deg) saturate(1.3)";return}
+ var h=hue(id);
+ im.style.filter="hue-rotate("+(h%360)+"deg) saturate("+(1+(h>>8)%6*.2).toFixed(2)+") brightness("+(.9+((h>>12)%4)*.07).toFixed(2)+")";
+}
+function avatar(id,cls){var im=document.createElement("img");im.className="av"+(cls?" "+cls:"");im.alt="";im.setAttribute("data-u",String(id||"?"));paintAv(im);return im}
+function refreshAv(id){var l=document.querySelectorAll("img.av");for(var i=0;i<l.length;i++)if(!id||l[i].getAttribute("data-u")===id)paintAv(l[i])}
+function paintYou(){var y=$("youav");y.textContent="";y.appendChild(avatar(me.id,"lg"))}
+paintYou();
+function known(id){return !!fr(id)||groups.some(function(g){return inG(g,id)})}
+function setPf(id,p){var c=cleanPf(p);if(c)PF[id]=c;else delete PF[id];LS("w97_pf",JSON.stringify(PF));refreshAv(id)}
+function pfSave(){
+ save();
+ Object.keys(dconn).forEach(function(id){var c=dconn[id];if(c&&c.open)try{c.send({t:"pf",p:me.pf||null})}catch(e){}});
+}
+$("pfb").onclick=function(){
+ var p=$("pfprev");p.textContent="";p.appendChild(avatar(me.id));
+ $("pfhue").value=me.pf&&me.pf.k==="c"?me.pf.h:(hue(me.id)%360);
+ $("pfmod").classList.add("open");
+};
+$("pfok").onclick=function(){$("pfmod").classList.remove("open")};
+$("pfhue").oninput=function(){me.pf={k:"c",h:+this.value};refreshAv(me.id)};
+$("pfhue").onchange=pfSave;
+$("pfrst").onclick=function(){me.pf=null;refreshAv(me.id);$("pfhue").value=hue(me.id)%360;pfSave()};
+$("pfup").onclick=function(){$("pffile").click()};
+$("pffile").onchange=function(){
+ var f=this.files[0];this.value="";if(!f||!/^image\//.test(f.type))return;
+ var url=URL.createObjectURL(f),im=new Image();
+ im.onload=function(){
+  var c=document.createElement("canvas");c.width=c.height=96;
+  var x=c.getContext("2d"),m=Math.min(im.width,im.height);
+  x.drawImage(im,(im.width-m)/2,(im.height-m)/2,m,m,0,0,96,96);URL.revokeObjectURL(url);
+  var q=.8,o=c.toDataURL("image/jpeg",q);while(o.length>20000&&q>.3){q-=.1;o=c.toDataURL("image/jpeg",q)}
+  if(o.length>23000){alert("That picture is too detailed. Try another one.");return}
+  me.pf={k:"i",d:o};refreshAv(me.id);pfSave();
+ };
+ im.onerror=function(){URL.revokeObjectURL(url);alert("Could not read that picture.")};im.src=url;
+};
 
 /* ---------- outbox: messages wait here until the other side confirms (works for offline friends) ---------- */
 var outbox=[],left=[],groups=[];
@@ -421,10 +476,8 @@ function renderFriends(){
   var r=document.createElement("div");r.className="f"+(active==="dm:"+f.id?" on":"")+(unread["dm:"+f.id]?" un":"");
   var d=document.createElement("span");d.className="dot"+(online[f.id]?" on":"");
   var n=document.createElement("span");n.className="n";n.textContent=f.name+(f.ok?"":" (pending)");
-  var x=document.createElement("button");x.className="mini";x.type="button";x.textContent="✕";x.title="remove";
-  x.onclick=function(e){e.stopPropagation();if(confirm("Remove "+f.name+"?")){friends=friends.filter(function(g){return g!==f});outbox=outbox.filter(function(e){return e.to!==f.id});saveOB();save();renderFriends()}};
   r.onclick=function(){open("dm:"+f.id);pingOne(f.id)};
-  var aw=document.createElement("span");aw.className="avw";aw.appendChild(avatar(f.id));aw.appendChild(d);r.appendChild(aw);r.appendChild(n);r.appendChild(x);box.appendChild(r);
+  var aw=document.createElement("span");aw.className="avw";aw.appendChild(avatar(f.id));aw.appendChild(d);r.appendChild(aw);r.appendChild(n);box.appendChild(r);
  });
  var rb=$("reqs");rb.textContent="";
  reqs.forEach(function(q){
@@ -441,11 +494,11 @@ function renderFriends(){
 
 /* ---------- direct connections (friends) ---------- */
 function wire(c){
- var go=function(){dconn[c.peer]=c;online[c.peer]=1;c.send({t:"hi",n:me.name});renderFriends()};
+ var go=function(){dconn[c.peer]=c;online[c.peer]=1;c.send({t:"hi",n:me.name,p:me.pf||null});renderFriends()};
  if(c.open)go();else c.on("open",go);
  c.on("data",function(d){
   if(!d||typeof d!=="object")return;var id=c.peer,f=fr(id);
-  if(d.t==="hi"){if(f){f.name=clean(d.n,16)||f.name;save();if(!f.ok)c.send({t:"fr",n:me.name})}renderFriends();flush(id,true);voiceHi(id)}
+  if(d.t==="hi"){if(d.p!==undefined&&known(id))setPf(id,d.p);if(f){f.name=clean(d.n,16)||f.name;save();if(!f.ok)c.send({t:"fr",n:me.name})}renderFriends();flush(id,true);voiceHi(id)}
   else if(d.t==="fr"){
    if(f){f.ok=true;f.name=clean(d.n,16)||f.name;save();c.send({t:"fa",n:me.name})}
    else if(!reqs.some(function(q){return q.id===id})){reqs.push({id:id,name:clean(d.n,16)||"someone"});beep("req")}
@@ -455,7 +508,7 @@ function wire(c){
   else if(d.t==="dm"&&f&&f.ok){ack(c,d);var dm=safe(d,false);dm.u=id;clearTyper("dm:"+id,id);addMsg("dm:"+id,dm)}
   else if(d.t==="del"&&f&&f.ok){ack(c,d);rmMsg("dm:"+id,d.mid,id)}
   else if(d.t==="gdel"){var G2=grp(d.gid);if(G2&&inG(G2,id)){ack(c,d);rmMsg("gc:"+G2.id,d.mid,id)}}
-  else if(d.t==="ty"){typing(c,d,f)}
+  else if(d.t==="ty"){typing(c,d,f)}else if(d.t==="pf"){if(known(id))setPf(id,d.p)}
   else if(d.t==="ack"){if(typeof d.id==="string"){outbox=outbox.filter(function(e){return!(e.to===id&&e.id===d.id)});saveOB();refreshTicks()}}
   else if(d.t==="gm"){var G=grp(d.gid);if(G&&inG(G,id)){ack(c,d);var gm=safe(d,false);gm.u=id;clearTyper("gc:"+G.id,id);addMsg("gc:"+G.id,gm)}}
   else if(d.t==="gnew"||d.t==="gu"||d.t==="gleave"){gctl(c,d,f)}
@@ -809,7 +862,7 @@ $("bexp").onclick=function(){copy(btoa(unescape(encodeURIComponent(JSON.stringif
 $("bimp").onclick=function(){
  var s=prompt("Paste your backup code:");if(!s)return;
  try{var d=JSON.parse(decodeURIComponent(escape(atob(s.trim()))));
-  if(!d.me||!validId(d.me.id))throw 0;me={id:d.me.id,name:clean(d.me.name,16)||"anon"};
+  if(!d.me||!validId(d.me.id))throw 0;me={id:d.me.id,name:clean(d.me.name,16)||"anon",pf:cleanPf(d.me.pf)};
   friends=(d.friends||[]).filter(function(f){return validId(f.id)}).map(function(f){return{id:f.id,name:clean(f.name,16),ok:!!f.ok}});
   groups=(Array.isArray(d.groups)?d.groups:[]).map(cleanG).filter(Boolean);saveG();save();alert("Imported. The page will reload.");location.reload();
  }catch(e){alert("That backup code is not valid.")}
@@ -1015,7 +1068,7 @@ function onCall(call){
 /* --- screen share: one extra one-way call per viewer, works in DM calls and in group voice --- */
 var scr=null,scrIn={};
 function canShare(){return !!(navigator.mediaDevices&&navigator.mediaDevices.getDisplayMedia)}
-function inLive(){return !!((dmc&&dmc.st==="live"&&dmc.call)||(gv&&gv.calls))}
+function inLive(){return !!((dmc&&dmc.st==="live")||(gv&&gv.calls))}
 function shareTargets(){
  if(dmc&&dmc.st==="live"&&dmc.call)return[dmc.id];
  if(gv&&gv.calls)return Object.keys(gv.calls);
@@ -1031,8 +1084,9 @@ function scrCallTo(id){
 }
 function shareStart(){
  if(scr){shareStop(true);return}
- if(!canShare()){sys("screen sharing is not supported on this device. you can still watch what others share.");return}
- if(!inLive()){sys("join a call or a voice chat first");return}
+ if(!inLive()){alert("Join a call or a voice chat first.");return}
+ if(!canShare()){alert("This browser can't share its screen (most phone browsers can't). Computers can, and you can still watch when someone else shares.");return}
+ if(dmc&&dmc.st==="live"&&!dmc.call){alert("The call is still connecting. Try again in a second.");return}
  navigator.mediaDevices.getDisplayMedia({video:{frameRate:{ideal:15,max:24}},audio:true}).then(function(st){
   if(!inLive()||scr){stopStream(st);return}
   scr={stream:st,calls:{},gid:(dmc&&dmc.st==="live")?null:gv.gid};
@@ -1095,7 +1149,7 @@ function vcUI(){
    var ids=Object.keys(vcIn[gv.gid]||{});Object.keys(gv.calls).forEach(function(i){if(ids.indexOf(i)<0)ids.push(i)});
    ids.forEach(function(i){if(i!==me.id)pp.appendChild(chip(i,nameOf(i)==="anon"?(vcIn[gv.gid]||{})[i]||"anon":nameOf(i),!!gv.calls[i]))});
   }
-  $("vcmute").textContent=vstate.muted?"🔇 unmute":"🎤 mute";var shw=$("vcshare");shw.style.display=(inLive()&&canShare())?"inline-block":"none";shw.textContent=scr?"⏹ stop sharing":"🖥 share screen";$("vcend").textContent=dmc&&dmc.st==="out"?"✕ cancel":gv?"📵 leave":"📵 hang up";
+  $("vcmute").textContent=vstate.muted?"🔇 unmute":"🎤 mute";var shw=$("vcshare");shw.style.display=inLive()?"inline-block":"none";shw.textContent=scr?"⏹ stop sharing":"🖥 share screen";$("vcend").textContent=dmc&&dmc.st==="out"?"✕ cancel":gv?"📵 leave":"📵 hang up";
  }
  var k=active||"",vb=$("vcb"),vj=$("vjoin");vj.classList.remove("open");
  if(k.indexOf("dm:")===0){vb.style.display="inline-block";vb.textContent="📞 call"}
