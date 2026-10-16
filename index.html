@@ -138,6 +138,7 @@ footer b{color:var(--teal)}
    <section>
     <h2>YOU</h2>
     <div class="row"><span id="youav"></span><input type="text" id="name" maxlength="16" placeholder="your handle" aria-label="your handle"></div>
+    <div class="row"><button class="mini" id="picb" type="button">📷 photo</button><button class="mini" id="picr" type="button" style="display:none">reset photo</button><input type="file" id="picf" accept="image/*" hidden></div>
     <div class="row"><button class="mini" id="cpid" type="button">copy my ID</button><button class="mini" id="cplink" type="button">copy invite link</button><button class="mini" id="tzb" type="button">🕐 clock</button></div>
     <div class="hint" id="myid" style="margin-top:4px;word-break:break-all"></div>
    </section>
@@ -215,9 +216,34 @@ var S={"lain": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAcFBQYFB
 
 /* ---------- avatars: lain + a different colour filter per person ---------- */
 function hue(id){var h=0;id=String(id||"?");for(var i=0;i<id.length;i++)h=(h*31+id.charCodeAt(i))>>>0;return h}
-function avatar(id,cls){var im=document.createElement("img"),h=hue(id);im.className="av"+(cls?" "+cls:"");im.src=S.lain;im.alt="";
+var pics={};
+function okPic(p){return typeof p==="string"&&p.length<30000&&/^data:image\/jpeg;base64,[A-Za-z0-9+\/=]+$/.test(p)}
+function picOf(id){return id===me.id?me.pic:(pics[id]||(fr(id)||{}).pic)}
+function avatar(id,cls){var im=document.createElement("img"),h=hue(id),pc=picOf(id);im.className="av"+(cls?" "+cls:"");im.alt="";
+ if(okPic(pc)){im.src=pc;return im}
+ im.src=S.lain;
  im.style.filter="hue-rotate("+(h%360)+"deg) saturate("+(1+(h>>8)%6*.2).toFixed(2)+") brightness("+(.9+((h>>12)%4)*.07).toFixed(2)+")";return im}
-$("youav").appendChild(avatar(me.id,"lg"));
+function myAv(){var b=$("youav");b.textContent="";b.appendChild(avatar(me.id,"lg"));$("picr").style.display=okPic(me.pic)?"inline-block":"none"}
+function setPic(p){if(p)me.pic=p;else delete me.pic;save();myAv();
+ Object.keys(dconn).forEach(function(id){var c=dconn[id];if(c&&c.open)try{c.send({t:"pic",p:me.pic||""})}catch(e){}});
+ renderFriends();if(active)open(active)}
+function gotPic(id,p){p=okPic(p)?p:"";var f=fr(id),old=pics[id]||(f&&f.pic)||"";if(old===p)return;
+ if(p)pics[id]=p;else delete pics[id];if(f){if(p)f.pic=p;else delete f.pic;save()}
+ renderFriends();if(active)open(active)}
+$("picb").onclick=function(){$("picf").click()};
+$("picr").onclick=function(){setPic("")};
+$("youav").onclick=function(){$("picf").click()};$("youav").style.cursor="pointer";
+$("picf").onchange=function(){var f=this.files&&this.files[0];this.value="";if(!f||!/^image\//.test(f.type))return;
+ var fd=new FileReader();
+ fd.onerror=function(){alert("could not read that image")};
+ fd.onload=function(){var im=new Image();
+  im.onerror=function(){alert("could not use that image")};
+  im.onload=function(){try{var w=im.naturalWidth,h=im.naturalHeight,m=Math.min(w,h),c=document.createElement("canvas");c.width=c.height=96;
+   var x=c.getContext("2d");x.fillStyle="#000";x.fillRect(0,0,96,96);x.drawImage(im,(w-m)/2,(h-m)/2,m,m,0,0,96,96);
+   var d=c.toDataURL("image/jpeg",.8);if(okPic(d))setPic(d);else alert("could not use that image")}catch(e){alert("could not use that image")}};
+  im.src=fd.result};
+ fd.readAsDataURL(f)};
+myAv();
 
 /* ---------- outbox: messages wait here until the other side confirms (works for offline friends) ---------- */
 var outbox=[],left=[],groups=[];
@@ -410,11 +436,12 @@ function renderFriends(){
 
 /* ---------- direct connections (friends) ---------- */
 function wire(c){
- var go=function(){dconn[c.peer]=c;online[c.peer]=1;c.send({t:"hi",n:me.name});renderFriends()};
+ var go=function(){dconn[c.peer]=c;online[c.peer]=1;c.send({t:"hi",n:me.name,p:me.pic||""});renderFriends()};
  if(c.open)go();else c.on("open",go);
  c.on("data",function(d){
   if(!d||typeof d!=="object")return;var id=c.peer,f=fr(id);
-  if(d.t==="hi"){if(f){f.name=clean(d.n,16)||f.name;save();if(!f.ok)c.send({t:"fr",n:me.name})}renderFriends();flush(id,true)}
+  if(d.t==="hi"){if(f){f.name=clean(d.n,16)||f.name;save();if(!f.ok)c.send({t:"fr",n:me.name})}renderFriends();flush(id,true);gotPic(id,d.p)}
+  else if(d.t==="pic"){gotPic(id,d.p)}
   else if(d.t==="fr"){
    if(f){f.ok=true;f.name=clean(d.n,16)||f.name;save();c.send({t:"fa",n:me.name})}
    else if(!reqs.some(function(q){return q.id===id})){reqs.push({id:id,name:clean(d.n,16)||"someone"});beep("req")}
@@ -771,11 +798,11 @@ $("rjoin").onclick=function(){joinRoom($("rcode").value)};
 $("rnew").onclick=function(){var c=rnd(6).toUpperCase();$("rcode").value=c;joinRoom(c)};
 $("menu").onclick=function(){$("side").classList.toggle("open")};
 $("bclr").onclick=function(){if(!confirm("Delete all saved messages on this device?"))return;chats={};unread={};outbox=[];saveOB();try{localStorage.removeItem("w97_chats")}catch(e){}if(active)open(active);else $("log").textContent="";sys("saved messages cleared")};
-$("bexp").onclick=function(){copy(btoa(unescape(encodeURIComponent(JSON.stringify({me:me,friends:friends,groups:groups})))),"backup code copied, keep it somewhere safe")};
+$("bexp").onclick=function(){copy(btoa(unescape(encodeURIComponent(JSON.stringify({me:me,friends:friends.map(function(f){return{id:f.id,name:f.name,ok:f.ok}}),groups:groups})))),"backup code copied, keep it somewhere safe")};
 $("bimp").onclick=function(){
  var s=prompt("Paste your backup code:");if(!s)return;
  try{var d=JSON.parse(decodeURIComponent(escape(atob(s.trim()))));
-  if(!d.me||!validId(d.me.id))throw 0;me={id:d.me.id,name:clean(d.me.name,16)||"anon"};
+  if(!d.me||!validId(d.me.id))throw 0;me={id:d.me.id,name:clean(d.me.name,16)||"anon"};if(okPic(d.me.pic))me.pic=d.me.pic;
   friends=(d.friends||[]).filter(function(f){return validId(f.id)}).map(function(f){return{id:f.id,name:clean(f.name,16),ok:!!f.ok}});
   groups=(Array.isArray(d.groups)?d.groups:[]).map(cleanG).filter(Boolean);saveG();save();alert("Imported. The page will reload.");location.reload();
  }catch(e){alert("That backup code is not valid.")}
