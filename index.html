@@ -213,6 +213,16 @@ footer b{color:var(--teal)}
 button:disabled{opacity:.4;cursor:default}button:disabled:hover{background:var(--field);color:var(--teal)}
 .mc:disabled:hover{background:var(--field);color:var(--teal)}
 @media(max-width:720px){.mart{width:58px;height:58px}#mtitle{font-size:22px}.mvw{margin-left:0;width:100%}}
+#gdock{flex:none;background:var(--panel);border-top:1px solid var(--teal)}
+#gd1{display:flex;align-items:center;gap:6px;padding:5px 10px;flex-wrap:wrap;font-size:12px;color:var(--soft)}
+#gd1 .grp{display:flex;align-items:center;gap:5px;min-width:0}
+#gdtt{max-width:34vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--teal)}
+#gdend{border-color:var(--red);color:var(--red)}#gdend:hover{background:var(--red);color:#000}
+#gdchat{margin-left:auto}#gdchat.un{border-color:var(--blue);color:var(--blue)}
+#gdc{display:none;border-top:1px dashed var(--dim)}#gdc.open{display:block}
+#gdlog{max-height:24vh;overflow-y:auto;padding:6px 10px;font-size:12px}
+#gdlog div{margin-bottom:2px;word-break:break-word}#gdlog b{color:var(--teal)}#gdlog .me b{color:var(--blue)}
+#gdc .row{padding:0 10px 8px}
 </style>
 </head>
 <body>
@@ -260,7 +270,7 @@ button:disabled{opacity:.4;cursor:default}button:disabled:hover{background:var(-
   <div id="chat">
    <div id="top"><span id="topt">&gt; pick a friend or join a room</span><button class="mini" id="gman" type="button">👥 group</button><button class="mini" id="vcb" type="button" style="display:none"></button><button class="mini" id="play" type="button" title="invite to play"><span class="pl-l">▶ play 3 Lies & 1 Truth</span><span class="pl-s">▶ 3 Lies</span></button><button class="mini" id="playc" type="button" title="invite to play chess"><span class="pl-l">♟ play chess</span><span class="pl-s">♟ chess</span></button><button class="mini" id="playt" type="button" title="invite to play tic tac toe"><span class="pl-l">⭕ play tic tac toe</span><span class="pl-s">⭕ XO</span></button><button class="mini" id="playr" type="button" title="invite to play rock paper scissors"><span class="pl-l">✊ rock paper scissors</span><span class="pl-s">✊ RPS</span></button></div>
    <div id="vjoin"></div>
-   <div id="mbar"><div class="mtb"><span class="tt">▌WIRED // AUDIO</span><span class="mtn" id="mtn"></span><span class="sp"></span><button class="mwb" id="mtbpp" type="button" title="play / pause"></button><button class="mwb" id="mmin" type="button" title="minimize / restore">_</button><button class="mwb" id="mstop" type="button" title="close the player for everyone">x</button></div><div class="mbd"><div class="mart"><img id="mart" alt=""></div><div class="mi"><div class="mlab" id="mlab">&gt; NOW PLAYING</div><div id="mtitle"><span id="mtx"></span></div><div id="msub"></div><div id="mviz"></div></div></div><div id="ytbox"></div><div class="mpr"><span id="mcur">0:00</span><div id="mprog"></div><span id="mdur">--:--</span></div><div class="mct"><button class="mc" id="mprev" type="button" title="previous"></button><button class="mc" id="mb10" type="button" title="back 10 seconds">-10s</button><button class="mc big" id="mpp" type="button" title="play / pause"></button><button class="mc" id="mf10" type="button" title="forward 10 seconds">+10s</button><button class="mc" id="mnext" type="button" title="next song"></button><div class="mvw"><button class="mc" id="mmute" type="button" title="mute (only for you)">VOL</button><input type="range" id="mvol" min="0" max="100" aria-label="volume"><button class="mc" id="madd" type="button" title="add songs to the queue">+ ADD</button><button class="mc" id="myt" type="button" title="add a YouTube link">▶ YT</button><button class="mc" id="mqb" type="button" title="show the queue">☰ 0</button></div></div><div id="mstat"></div><div class="mq" id="mq"></div></div>
+   <div id="mbar"><div class="mtb"><span class="tt">▌WIRED // AUDIO</span><span class="mtn" id="mtn"></span><span class="sp"></span><button class="mwb" id="mtbpp" type="button" title="play / pause"></button><button class="mwb" id="mmin" type="button" title="minimize / restore">_</button><button class="mwb" id="mstop" type="button" title="close the player for everyone">x</button></div><div class="mbd"><div class="mart"><img id="mart" alt=""></div><div class="mi"><div class="mlab" id="mlab">&gt; NOW PLAYING</div><div id="mtitle"><span id="mtx"></span></div><div id="msub"></div><div id="mviz"></div></div></div><div id="ytbox"></div><div class="mpr"><span id="mcur">0:00</span><div id="mprog"></div><span id="mdur">--:--</span></div><div class="mct"><button class="mc" id="mprev" type="button" title="previous"></button><button class="mc" id="mb10" type="button" title="back 10 seconds">-10s</button><button class="mc big" id="mpp" type="button" title="play / pause"></button><button class="mc" id="mf10" type="button" title="forward 10 seconds">+10s</button><button class="mc" id="mnext" type="button" title="next song"></button><div class="mvw"><button class="mc" id="mmute" type="button" title="mute (only for you)">VOL</button><input type="range" id="mvol" min="0" max="100" aria-label="volume"><button class="mc" id="madd" type="button" title="add songs to the queue">+ ADD</button><button class="mc" id="myt" type="button" title="add a YouTube link">▶ YT / Spotify</button><button class="mc" id="mqb" type="button" title="show the queue">☰ 0</button></div></div><div id="mstat"></div><div class="mq" id="mq"></div></div>
    <div id="log"><div class="sys">&gt; present day. present time.</div></div>
    <div id="typing"></div>
    <div id="tray"></div>
@@ -277,7 +287,7 @@ button:disabled{opacity:.4;cursor:default}button:disabled:hover{background:var(-
    </div>
   </div>
  </div>
- <div id="gov"><div id="gbar"><span id="gtitle"></span><button class="mini" id="gx" type="button">✕ leave game</button></div><iframe id="gf" title="3 Lies & 1 Truth" sandbox="allow-scripts"></iframe></div>
+ <div id="gov"><div id="gbar"><span id="gtitle"></span><button class="mini" id="gx" type="button">✕ leave game</button></div><iframe id="gf" title="3 Lies & 1 Truth" sandbox="allow-scripts"></iframe><div id="gdock"><div id="gd1"><span class="grp" id="gdcall" style="display:none"><button class="mini" id="gdmute" type="button"></button><button class="mini" id="gdend" type="button">📵 end call</button></span><span class="grp" id="gdmus" style="display:none"><button class="mini" id="gdprev" type="button">⏮</button><button class="mini" id="gdpp" type="button">▶</button><button class="mini" id="gdnext" type="button">⏭</button><button class="mini" id="gdvol" type="button">🔊</button><span id="gdtt"></span></span><button class="mini" id="gdchat" type="button">💬 chat</button></div><div id="gdc"><div id="gdlog"></div><div class="row"><input type="text" id="gdin" maxlength="200" placeholder="say something to your opponent..." autocomplete="off"><button id="gdsend" type="button">SEND</button></div></div></div></div>
  <div id="ring"><div id="ringbox"><div id="ringav"></div><div id="ringtxt"></div><div class="row"><button id="ringyes" type="button">📞 accept</button><button id="ringno" type="button">✕ decline</button></div></div></div>
  <div id="vcaudio" style="display:none"></div>
  <div id="gmod"><div id="gbox"><h2 id="gmt">NEW GROUP</h2><input type="text" id="gname" maxlength="20" placeholder="group name"><div id="gmem"></div><div id="gpick"></div><div class="row"><button id="gok" type="button">OK</button><button id="gcx" type="button">CANCEL</button><button id="gleave" type="button" style="margin-left:auto;color:var(--red)">LEAVE</button></div></div></div>
@@ -575,7 +585,7 @@ function wire(c){
   else if(d.t==="ack"){if(typeof d.id==="string"){outbox=outbox.filter(function(e){return!(e.to===id&&e.id===d.id)});saveOB();refreshTicks()}}
   else if(d.t==="gm"){var G=grp(d.gid);if(G&&inG(G,id)){ack(c,d);var gm=safe(d,false);gm.u=id;clearTyper("gc:"+G.id,id);addMsg("gc:"+G.id,gm)}}
   else if(d.t==="gnew"||d.t==="gu"||d.t==="gleave"){gctl(c,d,f)}
-  else if(d.t==="mu"){musRx(c,d,f)}else if(d.t==="vc"){vcSig(c,d,f)}else if(d.t==="scr"){scrSig(c,d)}else if(d.t==="gvj"||d.t==="gvp"||d.t==="gvh"||d.t==="gvl"){gvSig(c,d)}else if(d.t==="g"&&f&&f.ok&&gameWith===id){if(gready)$("gf").contentWindow.postMessage({gm:"rx",m:d.m},"*");else gq.push(d.m)}
+  else if(d.t==="mu"){musRx(c,d,f)}else if(d.t==="vc"){vcSig(c,d,f)}else if(d.t==="scr"){scrSig(c,d)}else if(d.t==="gvj"||d.t==="gvp"||d.t==="gvh"||d.t==="gvl"){gvSig(c,d)}else if(d.t==="g"&&f&&f.ok&&gameWith===id){if(d.m&&d.m.type==="chat"){gdChat(f.name,clean(d.m.x,200),0)}else if(gready)$("gf").contentWindow.postMessage({gm:"rx",m:d.m},"*");else gq.push(d.m)}
   else if(d.t==="gacc"&&f&&f.ok){var pi=typeof d.gid==="string"&&pendInv[d.gid];if(pi&&pi.id===id&&!gameWith){delete pendInv[d.gid];beep("req");gameOpen(id,true,pi.k)}else c.send({t:"gno"})}
   else if(d.t==="gno"&&gameWith===id){gameClose(false);sys("that invite expired or they are busy")}
  });
@@ -652,7 +662,7 @@ function gameOpen(fid,host,kind){
  var f=fr(fid);gameWith=fid;gameHost=host;gready=false;gq=[];
  var k=GN[kind]?kind:"kdbat";
  $("gtitle").textContent=GN[k]+" // vs "+(f?f.name:"friend");
- $("gov").classList.add("open");$("gf").srcdoc=k==="chess"?CHESS_HTML:k==="ttt"?TTT_HTML:k==="rps"?RPS_HTML:GAME_HTML;
+ $("gdlog").textContent="";$("gdc").classList.remove("open");$("gdchat").classList.remove("un");$("gov").classList.add("open");$("gf").srcdoc=k==="chess"?CHESS_HTML:k==="ttt"?TTT_HTML:k==="rps"?RPS_HTML:GAME_HTML;
 }
 function gameClose(notify){
  var c=gameWith&&dconn[gameWith];
@@ -1317,6 +1327,81 @@ function ytEl(T){
  T.el=A;return A;
 }
 function ytId(u){var m=String(u||"").trim().match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?(?:[^#\s]*&)?v=|embed\/|shorts\/|live\/|v\/))([\w-]{11})/);return m?m[1]:""}
+/* ad-free YouTube: play the audio stream straight from a Piped instance; fall back to the official embed (which can show ads) */
+var PIPED=["https://pipedapi.kavin.rocks","https://api.piped.private.coffee","https://pipedapi.adminforge.de","https://pipedapi.leptons.xyz"];
+function ytAudio(T){
+ var el=new Audio();el.preload="auto";el.volume=Math.max(0,Math.min(1,musVol/100));el.muted=musMuted;
+ el.onloadedmetadata=function(){if(mus&&mus.cur===T.tid)musApply(true);musTick()};
+ el.onended=function(){musEnded(T)};
+ T.el=el;
+ function fb(){if(T.dead||T.el!==el)return;try{el.pause();el.removeAttribute("src")}catch(e){}T.el=null;T.emb=1;if(mus){mus.shown=null;if(musCur()===T)musApply(true);musUI()}}
+ el.onerror=function(){if(el.src)fb()};
+ (function go(i){
+  if(T.dead||T.el!==el)return;if(i>=PIPED.length)return fb();
+  var ac=new AbortController(),tm=setTimeout(function(){ac.abort()},7000);
+  fetch(PIPED[i]+"/streams/"+T.yt,{signal:ac.signal}).then(function(r){return r.json()}).then(function(j){
+   clearTimeout(tm);
+   var a=(j.audioStreams||[]).filter(function(x){return x&&x.url&&/audio\/mp4/.test(x.mimeType||"")}).sort(function(p,q){return q.bitrate-p.bitrate})[0];
+   if(!a)throw 0;
+   if(T.dead||T.el!==el)return;
+   el.src=a.url;
+   if(j.title&&mus&&musTr(T.tid)===T){T.name=clean(j.title,80);mus.shown=null}
+   if(mus&&musCur()===T)musApply(true);musUI();
+  }).catch(function(){clearTimeout(tm);go(i+1)});
+ })(0);
+ return el;
+}
+/* Spotify: official embed player. Premium listeners hear full songs with no ads, everyone else gets previews */
+function spLoad(cb){
+ if(window.SPAPI)return cb(window.SPAPI);
+ (spLoad.q=spLoad.q||[]).push(cb);if(spLoad.s)return;spLoad.s=1;
+ window.onSpotifyIframeApiReady=function(a){window.SPAPI=a;var q=spLoad.q||[];spLoad.q=[];q.forEach(function(f){f(a)})};
+ var s2=document.createElement("script");s2.src="https://open.spotify.com/embed/iframe-api/v1";s2.async=true;document.head.appendChild(s2);
+}
+function spEl(T){
+ var d=document.createElement("div");$("ytbox").appendChild(d);
+ var kind=T.sp.split("/")[0],A={ctl:null,ready:false,_w:null,_t:0,_p:0,_ts:0,_rp:true,paused:true,duration:NaN,onended:null,onloadedmetadata:null,_done:false};
+ function tg(){try{A.ctl.togglePlay()}catch(e){}}
+ A.play=function(){A.paused=false;A._w=1;if(A.ready&&A._rp)tg();return Promise.resolve()};
+ A.pause=function(){A.paused=true;A._w=0;if(A.ready&&!A._rp)tg()};
+ Object.defineProperty(A,"currentTime",{get:function(){return A._p+(!A._rp&&A._ts?(Date.now()-A._ts)/1000:0)},set:function(v){A._t=v;if(A.ready&&kind==="track"){try{A.ctl.seek(v)}catch(e){}}}});
+ Object.defineProperty(A,"volume",{set:function(){}});Object.defineProperty(A,"muted",{set:function(){}});
+ A.destroy=function(){try{if(A.ctl)A.ctl.destroy()}catch(e){}if(d.parentNode)d.parentNode.removeChild(d)};
+ spLoad(function(api){
+  if(T.dead)return;
+  api.createController(d,{uri:"spotify:"+kind+":"+T.sp.split("/")[1],width:"100%",height:kind==="track"?80:152},function(c){
+   A.ctl=c;
+   c.addListener("ready",function(){A.ready=true;if(A.onloadedmetadata)A.onloadedmetadata();if(A._t&&kind==="track")try{c.seek(A._t)}catch(e){}if(A._w)tg()});
+   c.addListener("playback_update",function(e){
+    var q=e&&e.data;if(!q)return;
+    A._rp=!!q.isPaused;A.paused=A._rp&&!A._w;A._p=(q.position||0)/1000;A._ts=Date.now();
+    if(q.duration&&kind==="track")A.duration=q.duration/1000;
+    if(kind==="track"&&q.duration&&q.isPaused&&q.position>=q.duration-600&&!A._done){A._done=true;if(A.onended)A.onended()}
+    else if(q.position<q.duration-1500)A._done=false;
+   });
+  });
+ });
+ T.el=A;return A;
+}
+function spId(u){u=String(u||"").trim();var m=u.match(/open\.spotify\.com\/(?:intl-[a-z]+\/)?(track|album|playlist|episode)\/([A-Za-z0-9]{22})/)||u.match(/^spotify:(track|album|playlist|episode):([A-Za-z0-9]{22})$/);return m?m[1]+"/"+m[2]:""}
+function musAddSP(link){
+ var id=spId(link),k=active||"";
+ if(!id){sys("that doesn't look like a Spotify song / album / playlist link");return}
+ if(k.indexOf("dm:")!==0&&k.indexOf("gc:")!==0){sys("listen together works in direct chats and groups (not rooms)");return}
+ if(mus&&mus.key!==k){sys("you are already listening in another chat. close that player first");return}
+ if(!musPeersKey(k).length){sys("nobody is online in this chat right now, so you can't share a song yet");if(k.indexOf("dm:")===0)pingOne(k.slice(3));return}
+ if(mus&&mus.q.length>=MUS_N){sys("the queue is full ("+MUS_N+" songs)");return}
+ var kd=id.split("/")[0],M=musEnsure(k),T={tid:"t"+rnd(7),owner:me.id,name:"Spotify "+kd,size:0,mime:"sp",ready:true,recv:null,url:"",el:null,pct:100,sp:id};
+ M.q.push(T);if(!M.cur){M.cur=T.tid;M.want={p:0,pos:0,t:Date.now()}}
+ if(M.q.length===2)M.qopen=true;
+ spName(T);
+ var off={a:"add",tid:T.tid,name:T.name,size:0,n:0,mime:"sp",sp:id};
+ if(k.indexOf("gc:")===0)off.gid=k.slice(3);
+ musSend(off);sys("🎵 added a Spotify "+kd+" to the queue"+(kd==="track"?"":" (it plays through by itself)"));musUI();
+}
+function spName(T){
+ try{fetch("https://open.spotify.com/oembed?url="+encodeURIComponent("https://open.spotify.com/"+T.sp)).then(function(r){return r.json()}).then(function(j){if(j&&j.title&&mus&&musTr(T.tid)===T){T.name=clean(j.title,80);mus.shown=null;musUI()}}).catch(function(){})}catch(e){}
+}
 function musAddYT(link){
  var id=ytId(link),k=active||"";
  if(!id){sys("that doesn't look like a YouTube link");return}
@@ -1333,7 +1418,8 @@ function musAddYT(link){
 }
 function musEl(T){
  if(T.el)return T.el;
- if(T.yt)return ytEl(T);
+ if(T.sp)return spEl(T);
+ if(T.yt)return T.emb?ytEl(T):ytAudio(T);
  var el=new Audio();el.preload="auto";el.src=T.url;
  el.volume=Math.max(0,Math.min(1,musVol/100));el.muted=musMuted;
  el.onloadedmetadata=function(){if(mus&&mus.cur===T.tid)musApply(true);musTick()};
@@ -1344,7 +1430,7 @@ function musEl(T){
 /* make the local player match the shared state */
 function musApply(force){
  var M=mus;if(!M)return;var T=musCur();
- M.q.forEach(function(x){if(x===T||!x.el)return;if(x.yt){try{x.el.destroy()}catch(e){}x.el=null}else if(!x.el.paused)x.el.pause()});
+ M.q.forEach(function(x){if(x===T||!x.el)return;if(x.el.destroy){try{x.el.destroy()}catch(e){}x.el=null}else if(!x.el.paused)x.el.pause()});
  if(!T||!T.ready)return;
  var el=musEl(T),w=M.want,t=musNow(),dur=el.duration;
  if(isFinite(dur)&&t>dur)t=dur;
@@ -1466,6 +1552,17 @@ function musRx(c,d,f){
    if(M.q.length){try{c.send({t:"mu",a:"busy"})}catch(e){}}
    return;
   }
+  if(d.sp){
+   if(typeof d.sp!=="string"||!/^(track|album|playlist|episode)\/[A-Za-z0-9]{22}$/.test(d.sp))return;
+   if(M&&(M.q.length>=MUS_N||musTr(d.tid)))return;
+   M=musEnsure(key);
+   T={tid:d.tid,owner:id,name:clean(d.name,80)||"Spotify",size:0,mime:"sp",ready:true,recv:null,url:"",el:null,pct:100,sp:d.sp};
+   M.q.push(T);if(!M.cur){M.cur=T.tid;M.want={p:0,pos:0,t:Date.now()}}
+   if(M.q.length===2)M.qopen=true;
+   beep("req");spName(T);
+   if(key===active)sys("🎵 "+nameOf(id)+" added a Spotify "+d.sp.split("/")[0]);else{unread[key]=1;renderFriends()}
+   musUI();return;
+  }
   if(d.yt){
    if(typeof d.yt!=="string"||!/^[\w-]{11}$/.test(d.yt))return;
    if(M&&(M.q.length>=MUS_N||musTr(d.tid)))return;
@@ -1519,7 +1616,7 @@ function musRx(c,d,f){
 function musUI(){
  var M=mus,bar=$("mbar");
  if(!M){bar.classList.remove("open","min","qo","playing");return}
- bar.classList.add("open");bar.classList.toggle("min",musMin);bar.classList.toggle("hasyt",!!(musCur()&&musCur().yt));bar.classList.toggle("qo",!!M.qopen);
+ bar.classList.add("open");bar.classList.toggle("min",musMin);bar.classList.toggle("hasyt",!!(musCur()&&(musCur().emb||musCur().sp)));bar.classList.toggle("qo",!!M.qopen);
  var T=musCur(),ps=musPeers(),n=M.q.length,i=musIdx(M.cur),nm=T?T.name:"...";
  if(M.shown!==nm){
   M.shown=nm;
@@ -1603,7 +1700,7 @@ $("mus").onclick=$("madd").onclick=function(){
 };
 $("myt").onclick=function(){
  if(!active){sys("pick a friend or group first");return}
- var u=prompt("Paste a YouTube link");if(u)musAddYT(u);
+ var u=prompt("Paste a YouTube or Spotify link (song, album or playlist)");if(u){if(/spotify/i.test(u))musAddSP(u);else musAddYT(u)}
 };
 $("mfile").onchange=function(){var fl=[].slice.call(this.files||[]);this.value="";if(fl.length)musAdd(fl)};
 function musToggle(){
@@ -1639,6 +1736,35 @@ $("mvol").oninput=function(){musVol=+this.value;LS("w97_mvol",String(musVol));if
  });
  pg.addEventListener("pointercancel",function(){musDrag=-1;musTick()});
 })();
+
+/* ---------- in-game dock: call controls, music, chat ---------- */
+function gdChat(who,x,mine){
+ var l=$("gdlog"),r=document.createElement("div"),b=document.createElement("b");
+ if(mine)r.className="me";b.textContent=who+": ";r.appendChild(b);r.appendChild(document.createTextNode(x));l.appendChild(r);l.scrollTop=1e9;
+ if(!mine&&!$("gdc").classList.contains("open")){$("gdchat").classList.add("un");beep("msg")}
+}
+function gdSend(){
+ var t=$("gdin").value.trim();if(!t||!gameWith)return;
+ var c=dconn[gameWith];if(c&&c.open)try{c.send({t:"g",m:{type:"chat",x:t.slice(0,200)}})}catch(e){}
+ gdChat("you",t.slice(0,200),1);$("gdin").value="";
+}
+$("gdsend").onclick=gdSend;
+$("gdin").onkeydown=function(e){if(e.key==="Enter"){e.preventDefault();gdSend()}};
+$("gdchat").onclick=function(){var o=$("gdc").classList.toggle("open");this.classList.remove("un");if(o){$("gdlog").scrollTop=1e9;$("gdin").focus()}};
+$("gdmute").onclick=function(){$("vcmute").click()};
+$("gdend").onclick=function(){$("vcend").click()};
+$("gdprev").onclick=function(){$("mprev").click()};
+$("gdnext").onclick=function(){$("mnext").click()};
+$("gdpp").onclick=function(){musToggle()};
+$("gdvol").onclick=function(){$("mmute").click()};
+setInterval(function(){
+ if(!$("gov").classList.contains("open"))return;
+ var inCall=$("vcbar").classList.contains("open");
+ $("gdcall").style.display=inCall?"flex":"none";
+ if(inCall){$("gdmute").textContent=$("vcmute").textContent;$("gdend").textContent=$("vcend").textContent}
+ $("gdmus").style.display=mus?"flex":"none";
+ if(mus){var T=musCur();$("gdtt").textContent=T?T.name:"...";$("gdpp").textContent=musPlaying()?"❚❚":"▶";$("gdvol").textContent=musMuted?"🔇":"🔊"}
+},400);
 
 /* ---------- start ---------- */
 function start(){
