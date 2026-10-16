@@ -152,22 +152,66 @@ footer b{color:var(--teal)}
 #ringtxt b{color:var(--teal)}
 #ringyes{border-color:#4dff9a;color:#4dff9a}#ringyes:hover{background:#4dff9a;color:#000}
 #ringno{border-color:var(--red);color:var(--red)}#ringno:hover{background:var(--red);color:#000}
-
-#mbar{display:none;flex-direction:column;gap:6px;padding:7px 14px;border-bottom:1px solid var(--teal);background:var(--panel);font-size:12px;color:var(--soft)}
-#mbar.open{display:flex}
-.mrow{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-#mtitle{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text)}
-#mtitle b{color:var(--teal);font-weight:600}
-#mseek{flex:1;min-width:90px;accent-color:var(--teal)}
-#mvol{width:64px;accent-color:var(--teal)}
-#mrm{border-color:var(--red);color:var(--red)}#mrm:hover{background:var(--red);color:#000}
-#mpp{min-width:78px}
-.eq{display:inline-flex;gap:2px;align-items:flex-end;height:14px;flex:none}
-.eq i{width:3px;height:4px;background:var(--dim)}
-.eq.on i{background:var(--teal);animation:eqb .8s infinite ease-in-out alternate}
-.eq.on i:nth-child(2){animation-delay:-.3s}.eq.on i:nth-child(3){animation-delay:-.6s}
-@keyframes eqb{from{height:3px}to{height:14px}}
+#mbar{display:none;flex:none;margin:8px 14px;border:1px solid var(--teal);background:linear-gradient(180deg,#0b1f27 0,#061218 100%);box-shadow:0 0 16px rgba(111,227,210,.16),inset 0 0 26px rgba(0,0,0,.6);color:var(--soft);font-size:12px}
+#mbar.open{display:block}
+.mtb{display:flex;align-items:center;gap:8px;padding:1px 4px 1px 8px;background:var(--teal);color:#021014;font:400 18px/1.25 "VT323",monospace;letter-spacing:.08em}
+.mtb .tt{flex:none;white-space:nowrap}
+.mtb .mtn{flex:1;min-width:0;display:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:16px;opacity:.85;letter-spacing:.03em}
+.mtb .sp{flex:1}
+#mbar.min .mtn{display:block}#mbar.min .sp{display:none}
+.mwb{background:none;border:1px solid #021014;color:#021014;padding:0 7px;font:inherit;line-height:1.1;min-width:24px;height:20px;display:inline-flex;align-items:center;justify-content:center}
+.mwb:hover{background:#021014;color:var(--teal)}
+#mtbpp{display:none}#mbar.min #mtbpp{display:inline-flex}
+.mbd{display:flex;gap:10px;padding:10px 10px 4px}
+.mart{position:relative;width:70px;height:70px;flex:none;border:1px solid var(--dim);background:#000;overflow:hidden}
+.mart img{width:100%;height:100%;object-fit:cover;display:block}
+.mart::after{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(to bottom,transparent 0,transparent 2px,rgba(0,0,0,.4) 3px)}
+#mbar.playing .mart{border-color:var(--teal);animation:mpulse 2s infinite}
+@keyframes mpulse{0%,100%{box-shadow:0 0 6px rgba(111,227,210,.35)}50%{box-shadow:0 0 18px rgba(111,227,210,.75)}}
+.mi{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.mlab{font:400 14px/1 "VT323",monospace;color:var(--dim);letter-spacing:.12em}
+#mbar.playing .mlab{color:var(--soft)}
+#mtitle{overflow:hidden;white-space:nowrap;font:400 26px/1.05 "VT323",monospace;color:var(--teal);text-shadow:-2px 0 rgba(255,59,92,.45),2px 0 rgba(59,213,255,.45)}
+#mtx{display:inline-block;white-space:nowrap}
+#mtx.sc{animation:msc 11s linear infinite}
+@keyframes msc{0%,12%{transform:translateX(0)}88%,100%{transform:translateX(var(--d))}}
+#mtitle.gl{animation:mgl .7s steps(1)}
+@keyframes mgl{0%{transform:translateX(-5px) skewX(-8deg)}25%{transform:translateX(6px) skewX(6deg)}50%{transform:translateX(-2px)}75%{transform:translateX(3px) skewX(-3deg)}100%{transform:none}}
+#msub{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#mviz{display:flex;gap:2px;align-items:flex-end;height:20px;margin-top:auto}
+#mviz i{flex:1;max-width:7px;height:6%;background:var(--dim);transition:height .11s}
+#mbar.playing #mviz i{background:var(--teal);box-shadow:0 0 4px rgba(111,227,210,.5)}
+.mpr{display:flex;align-items:center;gap:8px;padding:2px 10px;font:400 17px/1 "VT323",monospace;color:var(--soft)}
+#mprog{flex:1;display:flex;gap:2px;align-items:center;height:28px;cursor:pointer;touch-action:none}
+#mprog i{flex:1;background:var(--dim);min-height:3px;transition:background .1s}
+#mprog i.on{background:var(--teal);box-shadow:0 0 5px rgba(111,227,210,.55)}
+.mct{display:flex;align-items:center;gap:5px;padding:4px 10px 6px;flex-wrap:wrap}
+.mvw{margin-left:auto;display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.mc{background:var(--field);color:var(--teal);border:1px solid var(--dim);height:32px;min-width:34px;padding:0 8px;font:400 18px/1 "VT323",monospace;letter-spacing:.04em;display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
+.mc.big{height:38px;min-width:48px;border-color:var(--teal);box-shadow:0 0 8px rgba(111,227,210,.3)}
+.mc:hover,.mc.on{background:var(--teal);color:#000}
+#mbar input[type=range]{-webkit-appearance:none;appearance:none;background:transparent;height:18px;width:72px;padding:0;border:0;margin:0}
+#mbar input[type=range]::-webkit-slider-runnable-track{height:4px;background:var(--dim)}
+#mbar input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:8px;height:14px;margin-top:-5px;background:var(--teal);border:0;border-radius:0}
+#mbar input[type=range]::-moz-range-track{height:4px;background:var(--dim)}
+#mbar input[type=range]::-moz-range-thumb{width:8px;height:14px;background:var(--teal);border:0;border-radius:0}
+#mstat{padding:0 10px 8px;font-size:11px}
+#mstat::after{content:"█";margin-left:4px;color:var(--teal);animation:mbl 1s steps(1) infinite}
+@keyframes mbl{50%{opacity:0}}
+.mq{display:none;border-top:1px dashed var(--dim);max-height:170px;overflow-y:auto;background:var(--field)}
+#mbar.qo .mq{display:block}
+.mqr{display:flex;align-items:center;gap:8px;padding:5px 10px;cursor:pointer}
+.mqr:hover{background:#07161c}
+.mqr .n{flex:none;width:24px;font:400 17px/1 "VT323",monospace;color:var(--soft)}
+.mqr .t{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text)}
+.mqr .o{flex:none;font-size:11px;color:var(--soft)}
+.mqr.on .n,.mqr.on .t{color:var(--teal)}
+.mqr .x{flex:none;background:none;border:none;color:var(--soft);padding:0 4px}
+.mqr .x:hover{background:none;color:var(--red)}
+#mbar.min .mbd,#mbar.min .mpr,#mbar.min .mct,#mbar.min #mstat,#mbar.min .mq{display:none}
 button:disabled{opacity:.4;cursor:default}button:disabled:hover{background:var(--field);color:var(--teal)}
+.mc:disabled:hover{background:var(--field);color:var(--teal)}
+@media(max-width:720px){.mart{width:58px;height:58px}#mtitle{font-size:22px}.mvw{margin-left:0;width:100%}}
 </style>
 </head>
 <body>
@@ -215,7 +259,7 @@ button:disabled{opacity:.4;cursor:default}button:disabled:hover{background:var(-
   <div id="chat">
    <div id="top"><span id="topt">&gt; pick a friend or join a room</span><button class="mini" id="gman" type="button">👥 group</button><button class="mini" id="vcb" type="button" style="display:none"></button><button class="mini" id="play" type="button" title="invite to play"><span class="pl-l">▶ play 3 Lies & 1 Truth</span><span class="pl-s">▶ 3 Lies</span></button><button class="mini" id="playc" type="button" title="invite to play chess"><span class="pl-l">♟ play chess</span><span class="pl-s">♟ chess</span></button><button class="mini" id="playt" type="button" title="invite to play tic tac toe"><span class="pl-l">⭕ play tic tac toe</span><span class="pl-s">⭕ XO</span></button></div>
    <div id="vjoin"></div>
-   <div id="mbar"><div class="mrow"><span class="eq" id="meq"><i></i><i></i><i></i></span><span id="mtitle"></span><button class="mini" id="madd" type="button" title="pick another song">🎵 change song</button><button class="mini" id="mrm" type="button" title="remove song for everyone">✕ remove</button></div><div class="mrow"><button class="mini" id="mb10" type="button">⏪ 10s</button><button class="mini" id="mpp" type="button">▶ play</button><button class="mini" id="mf10" type="button">10s ⏩</button><span id="mcur">0:00</span><input type="range" id="mseek" min="0" max="1000" value="0" aria-label="seek"><span id="mdur">--:--</span><span title="volume (only for you)">🔊</span><input type="range" id="mvol" min="0" max="100" aria-label="volume"></div><div class="hint" id="mstat"></div></div>
+   <div id="mbar"><div class="mtb"><span class="tt">▌WIRED // AUDIO</span><span class="mtn" id="mtn"></span><span class="sp"></span><button class="mwb" id="mtbpp" type="button" title="play / pause"></button><button class="mwb" id="mmin" type="button" title="minimize / restore">_</button><button class="mwb" id="mstop" type="button" title="close the player for everyone">x</button></div><div class="mbd"><div class="mart"><img id="mart" alt=""></div><div class="mi"><div class="mlab" id="mlab">&gt; NOW PLAYING</div><div id="mtitle"><span id="mtx"></span></div><div id="msub"></div><div id="mviz"></div></div></div><div class="mpr"><span id="mcur">0:00</span><div id="mprog"></div><span id="mdur">--:--</span></div><div class="mct"><button class="mc" id="mprev" type="button" title="previous"></button><button class="mc" id="mb10" type="button" title="back 10 seconds">-10s</button><button class="mc big" id="mpp" type="button" title="play / pause"></button><button class="mc" id="mf10" type="button" title="forward 10 seconds">+10s</button><button class="mc" id="mnext" type="button" title="next song"></button><div class="mvw"><button class="mc" id="mmute" type="button" title="mute (only for you)">VOL</button><input type="range" id="mvol" min="0" max="100" aria-label="volume"><button class="mc" id="madd" type="button" title="add songs to the queue">+ ADD</button><button class="mc" id="mqb" type="button" title="show the queue">☰ 0</button></div></div><div id="mstat"></div><div class="mq" id="mq"></div></div>
    <div id="log"><div class="sys">&gt; present day. present time.</div></div>
    <div id="typing"></div>
    <div id="tray"></div>
@@ -225,8 +269,8 @@ button:disabled{opacity:.4;cursor:default}button:disabled:hover{background:var(-
    <div id="bar">
     <button id="emo" type="button" title="emoji">😀</button><button id="stk" type="button" title="stickers">:)</button>
     <button id="pic" type="button" title="picture">IMG</button>
-    <button id="mic" type="button" title="voice message">🎤</button><button id="mus" type="button" title="listen to a song together">🎵</button>
-    <input type="file" id="file" accept="image/*"><input type="file" id="mfile" accept="audio/*,.mp3,.m4a,.aac,.wav,.ogg,.opus,.flac">
+    <button id="mic" type="button" title="voice message">🎤</button><button id="mus" type="button" title="listen to songs together">🎵</button>
+    <input type="file" id="file" accept="image/*"><input type="file" id="mfile" multiple accept="audio/*,.mp3,.m4a,.aac,.wav,.ogg,.opus,.flac">
     <input type="text" id="txt" maxlength="500" placeholder="say something..." autocomplete="off">
     <button id="send" type="button">SEND</button>
    </div>
@@ -1189,9 +1233,22 @@ $("ringyes").onclick=dmAccept;
 $("ringno").onclick=hang;
 addEventListener("pagehide",function(){if(gv)gvLeave();if(dmc)hang()});
 
-/* ---------- listen together: share a song and play it in sync ---------- */
-var mus=null,MUS_MAX=25*1024*1024,musVol=+(LS("w97_mvol")||80),musDrag=0;
+/* ---------- listen together: shared queue, played in sync ---------- */
+var mus=null,MUS_MAX=25*1048576,MUS_TOT=100*1048576,MUS_N=15;
+var musVol=+(LS("w97_mvol")||80),musMuted=LS("w97_mmute")==="1",musMin=LS("w97_mmin")==="1";
+var musDrag=-1,musOn=-1,musPl=null,musJobs=[],musBusy=false;
 if(isNaN(musVol))musVol=80;
+var MI={
+ play:'<svg width="16" height="16" viewBox="0 0 14 14"><path d="M3 1.5l9.5 5.5L3 12.5z" fill="currentColor"/></svg>',
+ pause:'<svg width="16" height="16" viewBox="0 0 14 14"><rect x="2.5" y="1.5" width="3.2" height="11" fill="currentColor"/><rect x="8.3" y="1.5" width="3.2" height="11" fill="currentColor"/></svg>',
+ prev:'<svg width="16" height="16" viewBox="0 0 14 14"><rect x="2" y="2" width="2.2" height="10" fill="currentColor"/><path d="M12 2v10L5 7z" fill="currentColor"/></svg>',
+ next:'<svg width="16" height="16" viewBox="0 0 14 14"><rect x="9.8" y="2" width="2.2" height="10" fill="currentColor"/><path d="M2 2v10l7-5z" fill="currentColor"/></svg>'
+};
+function musTr(tid){if(mus)for(var i=0;i<mus.q.length;i++)if(mus.q[i].tid===tid)return mus.q[i];return null}
+function musIdx(tid){if(mus)for(var i=0;i<mus.q.length;i++)if(mus.q[i].tid===tid)return i;return -1}
+function musCur(){return mus?musTr(mus.cur):null}
+function musTotal(){var s=0;if(mus)mus.q.forEach(function(t){s+=t.size});return s}
+function musNow(){var w=mus.want;return w.pos+(w.p?(Date.now()-w.t)/1000:0)}
 function musPeersKey(k){
  var ids=[];
  if(k.indexOf("dm:")===0)ids=[k.slice(3)];
@@ -1205,172 +1262,317 @@ function musFrom(id){
  var G=grp(k.slice(3));return !!(G&&inG(G,id));
 }
 function musSend(d,ids){
- if(!mus)return;d.t="mu";d.sid=mus.sid;
+ if(!mus)return;d.t="mu";
  (ids||musPeers()).forEach(function(id){var c=dconn[id];if(c&&c.open)try{c.send(d)}catch(e){}});
 }
-function musClear(){
- var M=mus;if(!M)return;mus=null;
- if(M.el){try{M.el.pause();M.el.removeAttribute("src");M.el.load()}catch(e){}}
- if(M.url)try{URL.revokeObjectURL(M.url)}catch(e){}
- musUI();
+function musEnsure(key){
+ if(!mus){mus={key:key,q:[],cur:null,want:{p:0,pos:0,t:Date.now()},blocked:0,qopen:false,shown:null};musOn=-1;musPl=null;musDrag=-1}
+ return mus;
 }
-function musAudio(M,src){
- var el=new Audio();el.preload="auto";el.src=src;el.volume=Math.max(0,Math.min(1,musVol/100));
- el.onloadedmetadata=function(){if(mus===M){musApply(true);musUI()}};
- el.onended=function(){if(mus===M){M.want={p:0,pos:0,t:Date.now()};musUI()}};
- el.onerror=function(){if(mus===M)sys("this audio file can't be played in your browser")};
- M.el=el;
+function musFree(T){
+ T.dead=true;
+ if(T.el){try{T.el.pause();T.el.removeAttribute("src");T.el.load()}catch(e){}T.el=null}
+ if(T.url){try{URL.revokeObjectURL(T.url)}catch(e){}T.url=""}
+}
+function musClear(){
+ var M=mus;if(!M)return;mus=null;M.q.forEach(musFree);musJobs=[];musUI();
+}
+function musVolApply(){
+ if(!mus)return;
+ mus.q.forEach(function(t){if(t.el){t.el.volume=Math.max(0,Math.min(1,musVol/100));t.el.muted=musMuted}});
+}
+function musEl(T){
+ if(T.el)return T.el;
+ var el=new Audio();el.preload="auto";el.src=T.url;
+ el.volume=Math.max(0,Math.min(1,musVol/100));el.muted=musMuted;
+ el.onloadedmetadata=function(){if(mus&&mus.cur===T.tid)musApply(true);musTick()};
+ el.onended=function(){musEnded(T)};
+ el.onerror=function(){if(mus&&musTr(T.tid)===T)sys("can't play \""+T.name+"\" in this browser")};
+ T.el=el;return el;
 }
 /* make the local player match the shared state */
 function musApply(force){
- var M=mus;if(!M||!M.el||!M.ready)return;var el=M.el,w=M.want;
- var t=w.pos+(w.p?(Date.now()-w.t)/1000:0),dur=el.duration;
+ var M=mus;if(!M)return;var T=musCur();
+ M.q.forEach(function(x){if(x!==T&&x.el&&!x.el.paused)x.el.pause()});
+ if(!T||!T.ready)return;
+ var el=musEl(T),w=M.want,t=musNow(),dur=el.duration;
  if(isFinite(dur)&&t>dur)t=dur;
  if(force||Math.abs(el.currentTime-t)>.8){try{el.currentTime=Math.max(0,t)}catch(e){}}
  if(w.p&&el.paused){M.blocked=0;var p=el.play();if(p&&p.catch)p.catch(function(){if(mus===M){M.blocked=1;musUI()}})}
  else if(!w.p&&!el.paused)el.pause();
 }
-/* a local action (play / pause / skip / seek): apply it here and tell everyone */
-function musCtl(p,pos){
- var M=mus;if(!M||!M.ready||!M.el)return;
- var dur=M.el.duration;pos=Math.max(0,pos);if(isFinite(dur))pos=Math.min(pos,dur);
- M.want={p:p?1:0,pos:pos,t:Date.now()};musApply(true);
- musSend({a:"st",p:p?1:0,pos:pos});musUI();
+/* a local action: apply it here and tell everyone */
+function musCtl(tid,p,pos){
+ var M=mus;if(!M)return;var T=musTr(tid);if(!T)return;
+ pos=Math.max(0,pos);if(T.el&&isFinite(T.el.duration))pos=Math.min(pos,T.el.duration);
+ M.cur=tid;M.want={p:p?1:0,pos:pos,t:Date.now()};M.blocked=0;
+ musApply(true);musSend({a:"st",tid:tid,p:p?1:0,pos:pos});musUI();
 }
-function musStart(f){
- var k=active||"";
+function musPlaying(){
+ var T=musCur();if(!T||!mus)return false;
+ if(T.ready&&T.el)return !T.el.paused&&!T.el.ended;
+ return !!mus.want.p;
+}
+/* a song finished: go on with the next one in the queue */
+function musEnded(T){
+ var M=mus;if(!M||M.cur!==T.tid)return;
+ var i=musIdx(T.tid),N=M.q[i+1];
+ if(N){
+  M.cur=N.tid;M.want={p:1,pos:0,t:Date.now()};M.blocked=0;musApply(true);
+  if(T.owner===me.id)musSend({a:"st",tid:N.tid,p:1,pos:0});
+ }else{
+  M.want={p:0,pos:0,t:Date.now()};if(T.el)try{T.el.currentTime=0}catch(e){}
+ }
+ musUI();
+}
+function musGo(d){
+ var M=mus;if(!M)return false;var T=M.q[musIdx(M.cur)+d];
+ if(!T)return false;musCtl(T.tid,!!M.want.p,0);return true;
+}
+function musRel(s){
+ var T=musCur();if(!T||!T.ready||!T.el)return;
+ musCtl(T.tid,!!mus.want.p,T.el.currentTime+s);
+}
+/* adding songs (this side owns the files it adds) */
+function musAdd(list){
+ var k=active||"",added=0,j,f,T;
  if(k.indexOf("dm:")!==0&&k.indexOf("gc:")!==0){sys("listen together works in direct chats and groups (not rooms)");return}
- if(!/^audio\//.test(f.type)&&!/\.(mp3|m4a|aac|wav|ogg|oga|opus|flac|webm|weba)$/i.test(f.name)){sys("that doesn't look like an audio file");return}
- if(f.size>MUS_MAX){sys("song too big, the limit is 25 MB");return}
+ if(mus&&mus.key!==k){sys("you are already listening in another chat. close that player first");return}
  if(!musPeersKey(k).length){sys("nobody is online in this chat right now, so you can't share a song yet");if(k.indexOf("dm:")===0)pingOne(k.slice(3));return}
- if(mus){musSend({a:"stop"})}musClear();
- var M={sid:"m"+rnd(7),key:k,owner:me.id,name:clean(f.name.replace(/\.[a-z0-9]+$/i,""),80)||"song",size:f.size,mime:f.type||"audio/mpeg",ready:true,want:{p:0,pos:0,t:Date.now()},pct:0,url:URL.createObjectURL(f)};
- mus=M;musAudio(M,M.url);musUI();
- sys("🎵 sharing \""+M.name+"\"...");
- var fr2=new FileReader();
- fr2.onload=function(){if(mus===M)musSendFile(M,fr2.result,musPeers())};
- fr2.onerror=function(){sys("could not read that file");if(mus===M)musClear()};
- fr2.readAsArrayBuffer(f);
+ for(j=0;j<list.length;j++){
+  f=list[j];
+  if(!/^audio\//.test(f.type)&&!/\.(mp3|m4a|aac|wav|ogg|oga|opus|flac|webm|weba)$/i.test(f.name)){sys("\""+clean(f.name,30)+"\" doesn't look like an audio file");continue}
+  if(f.size>MUS_MAX){sys("\""+clean(f.name,30)+"\" is too big (25 MB max per song)");continue}
+  if(mus&&mus.q.length>=MUS_N){sys("the queue is full ("+MUS_N+" songs)");break}
+  if(musTotal()+f.size>MUS_TOT){sys("the queue is over 100 MB. remove a song first");break}
+  var M=musEnsure(k);
+  T={tid:"t"+rnd(7),owner:me.id,name:clean(f.name.replace(/\.[a-z0-9]+$/i,""),80)||"song",size:f.size,mime:f.type||"audio/mpeg",ready:true,recv:null,url:URL.createObjectURL(f),el:null,pct:0,file:f};
+  M.q.push(T);
+  if(!M.cur){M.cur=T.tid;M.want={p:0,pos:0,t:Date.now()}}
+  if(M.q.length===2)M.qopen=true;
+  var off={a:"add",tid:T.tid,name:T.name,size:T.size,n:Math.max(1,Math.ceil(T.size/12288)),mime:T.mime};
+  if(k.indexOf("gc:")===0)off.gid=k.slice(3);
+  musSend(off);musJobs.push(T);added++;
+ }
+ if(added){sys("🎵 added "+added+" song"+(added>1?"s":"")+" to the queue");musUI();musRun()}
 }
-function musSendFile(M,buf,to){
- var CH=12288,n=Math.max(1,Math.ceil(buf.byteLength/CH)),i=0,offer={a:"offer",name:M.name,size:buf.byteLength,n:n,mime:M.mime};
- if(M.key.indexOf("gc:")===0)offer.gid=M.key.slice(3);
- musSend(offer,to);
- function busy(live){return live.some(function(id){var dc=dconn[id].dataChannel;return dc&&dc.bufferedAmount>1048576})}
- function pump(){
-  if(mus!==M)return;
-  var live=to.filter(function(id){var c=dconn[id];return c&&c.open});
-  if(!live.length){M.pct=100;musUI();return}
-  var sent=0,last=M.pct;
+function musRun(){
+ if(musBusy)return;
+ var T=null;
+ while(musJobs.length){var x=musJobs.shift();if(!x.dead&&mus&&musTr(x.tid)===x){T=x;break}}
+ if(!T)return;
+ musBusy=true;
+ var fr2=new FileReader();
+ fr2.onload=function(){musPump(T,fr2.result)};
+ fr2.onerror=function(){sys("could not read \""+T.name+"\"");musBusy=false;musRemove(T.tid,true);musRun()};
+ fr2.readAsArrayBuffer(T.file);
+}
+function musPump(T,buf){
+ var CH=12288,n=Math.max(1,Math.ceil(buf.byteLength/CH)),i=0,M=mus;
+ function fin(){T.pct=100;T.file=null;musBusy=false;musUI();musRun()}
+ function busy(live){return live.some(function(id){var dc=dconn[id]&&dconn[id].dataChannel;return dc&&dc.bufferedAmount>1048576})}
+ function step(){
+  if(T.dead||mus!==M){musBusy=false;if(mus)musRun();return}
+  var live=musPeers();
+  if(!live.length){fin();return}
+  var sent=0,last=T.pct;
   while(i<n&&sent<64&&!busy(live)){
-   var part=buf.slice(i*CH,Math.min(buf.byteLength,(i+1)*CH)),msg={t:"mu",sid:M.sid,a:"c",i:i,d:part};
+   var msg={t:"mu",a:"c",tid:T.tid,i:i,d:buf.slice(i*CH,Math.min(buf.byteLength,(i+1)*CH))};
    live.forEach(function(id){try{dconn[id].send(msg)}catch(e){}});i++;sent++;
   }
-  M.pct=Math.round(i/n*100);if(M.pct!==last)musUI();
-  if(i<n)setTimeout(pump,sent?4:60);
+  T.pct=Math.round(i/n*100);if(T.pct!==last)musUI();
+  if(i<n)setTimeout(step,sent?4:60);else fin();
  }
- pump();
+ step();
 }
-function musDone(){
- var M=mus,R=M.recv;M.recv=null;
- var mime=/^audio\/[a-z0-9.+-]{2,30}$/i.test(M.mime)?M.mime:"audio/mpeg";
- M.url=URL.createObjectURL(new Blob(R.parts,{type:mime}));M.ready=true;musAudio(M,M.url);
- musSend({a:"ready"},[M.owner]);musApply(true);musUI();
+function musRemove(tid,notify){
+ var M=mus;if(!M)return;var i=musIdx(tid);if(i<0)return;
+ var T=M.q[i],wasCur=M.cur===tid,wasP=M.want.p;
+ if(notify)musSend({a:"rm",tid:tid});
+ M.q.splice(i,1);musFree(T);
+ if(!M.q.length){musClear();return}
+ if(wasCur){var N=M.q[i]||M.q[i-1];M.cur=N.tid;M.want={p:wasP,pos:0,t:Date.now()};M.blocked=0;musApply(true)}
+ musUI();
+}
+function musDone(T){
+ var R=T.recv;T.recv=null;
+ var mime=/^audio\/[a-z0-9.+-]{2,30}$/i.test(T.mime)?T.mime:"audio/mpeg";
+ T.url=URL.createObjectURL(new Blob(R.parts,{type:mime}));T.ready=true;
+ musSend({a:"ready",tid:T.tid},[T.owner]);
+ if(mus&&mus.cur===T.tid)musApply(true);
+ musUI();
 }
 /* messages from the other side */
+var validTid=function(s){return typeof s==="string"&&/^[a-z0-9]{4,12}$/.test(s)};
 function musRx(c,d,f){
- var id=c.peer,i,b,bl,R;
- if(typeof d.sid!=="string"||!/^[a-z0-9]{4,12}$/.test(d.sid))return;
- if(d.a==="offer"){
+ var id=c.peer,M=mus,T,R,i,b,bl;
+ if(d.a==="add"){
+  if(!validTid(d.tid))return;
   var key;
   if(d.gid){var G=grp(d.gid);if(!G||!inG(G,id)||!inG(G,me.id))return;key="gc:"+G.id}
   else{if(!f||!f.ok)return;key="dm:"+id}
+  if(M&&M.key!==key){
+   if(M.q.length){try{c.send({t:"mu",a:"busy"})}catch(e){}}
+   return;
+  }
   var size=+d.size,n=+d.n;
   if(!(size>0&&size<=MUS_MAX)||!(n>=1&&n<=4096&&n%1===0)||n*16300<size)return;
-  musClear();
-  mus={sid:d.sid,key:key,owner:id,name:clean(d.name,80)||"song",size:size,mime:clean(d.mime,40),ready:false,want:{p:0,pos:0,t:Date.now()},recv:{parts:[],got:0,n:n,bytes:0},url:"",el:null};
+  if(M&&(M.q.length>=MUS_N||musTotal()+size>MUS_TOT||musTr(d.tid)))return;
+  M=musEnsure(key);
+  T={tid:d.tid,owner:id,name:clean(d.name,80)||"song",size:size,mime:clean(d.mime,40),ready:false,recv:{parts:[],got:0,n:n,bytes:0},url:"",el:null,pct:0};
+  M.q.push(T);
+  if(!M.cur){M.cur=T.tid;M.want={p:0,pos:0,t:Date.now()}}
+  if(M.q.length===2)M.qopen=true;
   beep("req");
-  if(key===active)sys("🎵 "+nameOf(id)+" shared a song: "+mus.name+" ("+(size/1048576).toFixed(1)+" MB)");
+  if(key===active)sys("🎵 "+nameOf(id)+" added \""+T.name+"\" ("+(size/1048576).toFixed(1)+" MB)");
   else{unread[key]=1;renderFriends()}
   musUI();return;
  }
- if(!mus||mus.sid!==d.sid||!musFrom(id))return;
+ if(!M||!musFrom(id))return;
  if(d.a==="c"){
-  R=mus.recv;if(!R||mus.owner!==id)return;i=d.i;b=d.d;
+  T=musTr(d.tid);R=T&&T.recv;if(!R||T.owner!==id)return;
+  i=d.i;b=d.d;
   if(!(typeof i==="number"&&i>=0&&i<R.n&&i%1===0)||R.parts[i])return;
   if(!b||typeof b!=="object"||typeof b.byteLength!=="number")return;
   bl=b.byteLength;if(!(bl>0&&bl<=16300))return;
   R.parts[i]=b;R.got++;R.bytes+=bl;
-  if(R.bytes>mus.size+16300){musClear();sys("that song transfer looked wrong, so it was dropped");return}
-  if(R.got===R.n)musDone();else if(R.got%16===0)musUI();
+  if(R.bytes>T.size+16300){musRemove(T.tid,false);sys("a song transfer looked wrong, so it was dropped");return}
+  if(R.got===R.n)musDone(T);else if(R.got%16===0)musUI();
  }
  else if(d.a==="st"){
-  mus.want={p:d.p?1:0,pos:Math.max(0,+d.pos||0),t:Date.now()};
-  if(mus.ready)musApply(!d.h);
+  if(!validTid(d.tid))return;
+  var pos=Math.max(0,+d.pos||0),p=d.p?1:0;
+  if(d.h){if(M.cur!==d.tid)return;M.want={p:p,pos:pos,t:Date.now()};musApply(false)}
+  else{M.cur=d.tid;M.want={p:p,pos:pos,t:Date.now()};M.blocked=0;musApply(true)}
   musUI();
  }
  else if(d.a==="ready"){
-  if(mus.owner===me.id&&mus.el)musSend({a:"st",p:mus.el.paused?0:1,pos:mus.el.currentTime},[id]);
+  if(validTid(d.tid)&&M.cur===d.tid)musSend({a:"st",tid:M.cur,p:M.want.p?1:0,pos:musNow()},[id]);
  }
- else if(d.a==="stop"){
-  var nm=nameOf(id);musClear();sys("🎵 "+nm+" removed the song");
- }
+ else if(d.a==="rm"){if(validTid(d.tid)&&musTr(d.tid))musRemove(d.tid,false)}
+ else if(d.a==="stop"){var nm=nameOf(id);musClear();sys("🎵 "+nm+" closed the player")}
+ else if(d.a==="busy"){if(Date.now()-(M.busyT||0)>5000){M.busyT=Date.now();sys("🎵 "+nameOf(id)+" is listening in another chat, they did not get your song")}}
 }
-/* player UI */
+/* ---------- player UI ---------- */
 function musUI(){
  var M=mus,bar=$("mbar");
- if(!M){bar.classList.remove("open");return}
- bar.classList.add("open");
- var t=$("mtitle");t.textContent="";var b=document.createElement("b");b.textContent=M.name;
- t.appendChild(document.createTextNode("🎵 "));t.appendChild(b);
- t.appendChild(document.createTextNode(" · shared by "+(M.owner===me.id?"you":nameOf(M.owner))));
- var ps=musPeers(),st="";
- if(M.recv)st="receiving the song... "+Math.round(M.recv.got/M.recv.n*100)+"%";
- else if(M.owner===me.id&&M.pct<100&&ps.length)st="sending to your friend... "+M.pct+"%";
- else if(M.blocked)st="your browser blocked autoplay. Tap play to join in";
- else if(!ps.length)st="⚠ nobody else is connected right now";
- else st="listening together · anyone can play, pause or skip";
+ if(!M){bar.classList.remove("open","min","qo","playing");return}
+ bar.classList.add("open");bar.classList.toggle("min",musMin);bar.classList.toggle("qo",!!M.qopen);
+ var T=musCur(),ps=musPeers(),n=M.q.length,i=musIdx(M.cur),nm=T?T.name:"...";
+ if(M.shown!==nm){
+  M.shown=nm;
+  var tx=$("mtx"),tt=$("mtitle");tx.textContent=nm;tx.classList.remove("sc");
+  tt.classList.remove("gl");void tt.offsetWidth;tt.classList.add("gl");
+  var h=hue(nm),pb=$("mprog").children,k;
+  for(k=0;k<pb.length;k++)pb[k].style.height=(28+Math.abs(Math.sin(h+k*1.7))*72)+"%";
+  $("mart").style.filter="hue-rotate("+(h%360)+"deg) saturate(1.3)";
+  musOn=-1;
+  if(!musMin)requestAnimationFrame(function(){
+   var o=tx.scrollWidth-tt.clientWidth;
+   if(o>2){tx.style.setProperty("--d",-(o+14)+"px");tx.classList.add("sc")}
+  });
+ }
+ $("mtn").textContent="▸ "+nm;
+ $("msub").textContent=(T?"shared by "+(T.owner===me.id?"you":nameOf(T.owner)):"waiting for the song")+" · track "+(i<0?"?":i+1)+" of "+n;
+ var st;
+ if(T&&T.recv)st="> downloading... "+Math.round(T.recv.got/T.recv.n*100)+"% (starts on its own)";
+ else if(!T)st="> waiting for the song...";
+ else if(T.owner===me.id&&T.pct<100&&ps.length)st="> sending to them... "+T.pct+"%";
+ else if(M.blocked)st="> your browser blocked autoplay. press play to join in";
+ else if(!ps.length)st="> nobody else is connected right now";
+ else st="> synced with the wired · anyone can control";
  $("mstat").textContent=st;
- $("mpp").disabled=$("mb10").disabled=$("mf10").disabled=$("mseek").disabled=!M.ready;
+ var ok=!!(T&&T.ready);
+ $("mb10").disabled=$("mf10").disabled=!ok;$("mprog").style.opacity=ok?1:.45;
+ $("mnext").disabled=!M.q[i+1];$("mprev").disabled=!T;
+ $("mqb").textContent="☰ "+n;$("mqb").classList.toggle("on",!!M.qopen);
+ $("mmute").textContent=musMuted?"MUTE":"VOL";$("mmute").classList.toggle("on",musMuted);
+ $("mmin").textContent=musMin?"□":"_";
+ /* queue list */
+ var q=$("mq");q.textContent="";
+ M.q.forEach(function(t,k2){
+  var r=document.createElement("div"),on=t.tid===M.cur;r.className="mqr"+(on?" on":"");
+  var a=document.createElement("span");a.className="n";a.textContent=on?(M.want.p?"▶\uFE0E":"❚❚"):String(k2+1);
+  var nmEl=document.createElement("span");nmEl.className="t";nmEl.textContent=t.name;
+  var o=document.createElement("span");o.className="o";
+  o.textContent=t.recv?"↓ "+Math.round(t.recv.got/t.recv.n*100)+"%":(t.owner===me.id&&t.pct<100?"↑ "+t.pct+"%":(t.owner===me.id?"you":nameOf(t.owner)));
+  var x=document.createElement("button");x.type="button";x.className="x";x.textContent="✕";x.title="remove from the queue for everyone";
+  x.onclick=function(e){e.stopPropagation();musRemove(t.tid,true)};
+  r.onclick=function(){if(t.tid!==M.cur)musCtl(t.tid,1,0)};
+  r.appendChild(a);r.appendChild(nmEl);r.appendChild(o);r.appendChild(x);q.appendChild(r);
+ });
  musTick();
 }
 function musTick(){
  var M=mus;if(!M)return;
- var el=M.el,dur=el&&isFinite(el.duration)?el.duration:0,cur=el?el.currentTime:0;
- if(musDrag&&Date.now()-musDrag>2500)musDrag=0;
- if(!musDrag){$("mcur").textContent=fmtT(cur);$("mseek").value=dur?Math.round(cur/dur*1000):0}
+ var T=musCur(),el=T&&T.el,dur=el&&isFinite(el.duration)?el.duration:0,cur=el?el.currentTime:0;
+ var frac=musDrag>=0?musDrag:(dur?cur/dur:0);
+ var bl=$("mprog").children,N=bl.length,on=Math.round(frac*N),j;
+ if(on!==musOn){musOn=on;for(j=0;j<N;j++)bl[j].className=j<on?"on":""}
+ $("mcur").textContent=fmtT(musDrag>=0?musDrag*dur:cur);
  $("mdur").textContent=dur?fmtT(dur):"--:--";
- var pl=!!(el&&!el.paused&&!el.ended);
- $("mpp").textContent=pl?"⏸ pause":"▶ play";
- $("meq").className="eq"+(pl?" on":"");
+ var pl=musPlaying();
+ if(pl!==musPl){musPl=pl;$("mpp").innerHTML=$("mtbpp").innerHTML=pl?MI.pause:MI.play}
+ $("mbar").classList.toggle("playing",pl);
 }
 setInterval(musTick,250);
-/* the owner keeps everyone in sync while the song plays */
 setInterval(function(){
- if(mus&&mus.owner===me.id&&mus.el&&!mus.el.paused)musSend({a:"st",p:1,pos:mus.el.currentTime,h:1});
+ if(!mus||musMin)return;
+ var bars=$("mviz").children,pl=$("mbar").classList.contains("playing"),j;
+ for(j=0;j<bars.length;j++)bars[j].style.height=(pl?(10+Math.random()*90*(1-j/bars.length*.55)):6)+"%";
+},120);
+/* whoever owns the current song keeps everyone in sync */
+setInterval(function(){
+ var T=musCur();
+ if(T&&T.owner===me.id&&T.el&&!T.el.paused)musSend({a:"st",tid:T.tid,p:1,pos:T.el.currentTime,h:1});
 },3000);
+/* ---------- wiring ---------- */
+(function(){
+ var pb=$("mprog"),vz=$("mviz"),k,e;
+ for(k=0;k<48;k++)pb.appendChild(document.createElement("i"));
+ for(k=0;k<24;k++)vz.appendChild(document.createElement("i"));
+ $("mart").src=S.lain;
+ $("mprev").innerHTML=MI.prev;$("mnext").innerHTML=MI.next;$("mpp").innerHTML=$("mtbpp").innerHTML=MI.play;
+ $("mvol").value=musVol;
+})();
 $("mus").onclick=$("madd").onclick=function(){
  if(!active){sys("pick a friend or group first");return}
  $("mfile").click();
 };
-$("mfile").onchange=function(){var f=this.files[0];this.value="";if(f)musStart(f)};
-$("mpp").onclick=function(){
- var M=mus;if(!M||!M.el)return;var el=M.el,end=isFinite(el.duration)&&el.currentTime>=el.duration-.2;
- musCtl(el.paused,end?0:el.currentTime);
+$("mfile").onchange=function(){var fl=[].slice.call(this.files||[]);this.value="";if(fl.length)musAdd(fl)};
+function musToggle(){
+ var T=musCur();if(!T||!mus)return;
+ var el=T.el,pos=T.ready&&el?(isFinite(el.duration)&&el.currentTime>=el.duration-.2?0:el.currentTime):musNow();
+ musCtl(T.tid,!musPlaying(),pos);
+}
+$("mpp").onclick=$("mtbpp").onclick=musToggle;
+$("mb10").onclick=function(){musRel(-10)};
+$("mf10").onclick=function(){musRel(10)};
+$("mnext").onclick=function(){musGo(1)};
+$("mprev").onclick=function(){
+ if(!mus)return;var T=musCur(),el=T&&T.el;
+ if((el&&el.currentTime>3)||!musGo(-1))musCtl(mus.cur,!!mus.want.p,0);
 };
-$("mb10").onclick=function(){if(mus&&mus.el)musCtl(!!mus.want.p,mus.el.currentTime-10)};
-$("mf10").onclick=function(){if(mus&&mus.el)musCtl(!!mus.want.p,mus.el.currentTime+10)};
-$("mseek").oninput=function(){
- if(!mus||!mus.el||!isFinite(mus.el.duration))return;
- musDrag=Date.now();$("mcur").textContent=fmtT(this.value/1000*mus.el.duration);
+$("mqb").onclick=function(){if(mus){mus.qopen=!mus.qopen;musUI()}};
+$("mmin").onclick=function(){musMin=!musMin;LS("w97_mmin",musMin?"1":"0");if(mus)mus.shown=null;musUI()};
+$("mstop").onclick=function(){
+ if(!mus)return;if(!confirm("Close the player and clear the queue for everyone?"))return;
+ musSend({a:"stop"});musClear();sys("🎵 player closed");
 };
-$("mseek").onchange=function(){
- musDrag=0;if(!mus||!mus.el||!isFinite(mus.el.duration))return;
- musCtl(!!mus.want.p,this.value/1000*mus.el.duration);
-};
-$("mrm").onclick=function(){if(!mus)return;musSend({a:"stop"});musClear();sys("🎵 song removed")};
-$("mvol").value=musVol;
-$("mvol").oninput=function(){musVol=+this.value;LS("w97_mvol",String(musVol));if(mus&&mus.el)mus.el.volume=musVol/100};
+$("mmute").onclick=function(){musMuted=!musMuted;LS("w97_mmute",musMuted?"1":"0");musVolApply();musUI()};
+$("mvol").oninput=function(){musVol=+this.value;LS("w97_mvol",String(musVol));if(musMuted){musMuted=false;LS("w97_mmute","0");musUI()}musVolApply()};
+(function(){
+ var pg=$("mprog");
+ function fr3(e){var r=pg.getBoundingClientRect();return Math.min(1,Math.max(0,(e.clientX-r.left)/r.width))}
+ pg.addEventListener("pointerdown",function(e){var T=musCur();if(!T||!T.ready)return;try{pg.setPointerCapture(e.pointerId)}catch(x){}musDrag=fr3(e);musTick()});
+ pg.addEventListener("pointermove",function(e){if(musDrag>=0){musDrag=fr3(e);musTick()}});
+ pg.addEventListener("pointerup",function(){
+  if(musDrag<0)return;var f=musDrag,T=musCur();musDrag=-1;
+  if(T&&T.el&&isFinite(T.el.duration))musCtl(T.tid,!!mus.want.p,f*T.el.duration);
+  musTick();
+ });
+ pg.addEventListener("pointercancel",function(){musDrag=-1;musTick()});
+})();
 
 /* ---------- start ---------- */
 function start(){
