@@ -1679,7 +1679,7 @@ function musUI(){
  var M=mus,bar=$("mbar");
  if(!M){bar.classList.remove("open","min","qo","playing");return}
  bar.classList.add("open");bar.classList.toggle("min",musMin);bar.classList.toggle("hasyt",!!(musCur()&&(musCur().emb||musCur().sp)));bar.classList.toggle("qo",!!M.qopen);
- var T=musCur(),ps=musPeers(),n=M.q.length,i=musIdx(M.cur),nm=T?T.name:"...";
+ var T=musCur(),ps=musPeers(),n=M.q.length,i=musIdx(M.cur),nm=T?T.name:(n?"...":"nothing yet");
  if(M.shown!==nm){
   M.shown=nm;
   var tx=$("mtx"),tt=$("mtitle");tx.textContent=nm;tx.classList.remove("sc");
@@ -1694,10 +1694,10 @@ function musUI(){
   });
  }
  $("mtn").textContent="▸ "+nm;
- $("msub").textContent=(T?"shared by "+(T.owner===me.id?"you":nameOf(T.owner)):"waiting for the song")+" · track "+(i<0?"?":i+1)+" of "+n;
+ $("msub").textContent=(T?"shared by "+(T.owner===me.id?"you":nameOf(T.owner)):"waiting for the song")+(n?" · track "+(i<0?"?":i+1)+" of "+n:" · queue is empty");
  var st;
  if(T&&T.recv)st="> downloading... "+Math.round(T.recv.got/T.recv.n*100)+"% (starts on its own)";
- else if(!T)st="> waiting for the song...";
+ else if(!T)st=n?"> waiting for the song...":"> empty. press + ADD for a file or ▶ YT for a link";
  else if(T.owner===me.id&&T.pct<100&&ps.length)st="> sending to them... "+T.pct+"%";
  else if(M.blocked)st="> your browser blocked autoplay. press play to join in";
  else if(!ps.length)st="> nobody else is connected right now";
@@ -1770,6 +1770,11 @@ $("madd").onclick=function(){
  $("mus").onclick=function(e){
   if(!active){sys("pick a friend or group first");return}
   e.stopPropagation();
+  if(!mus){
+   if(active.indexOf("dm:")!==0&&active.indexOf("gc:")!==0){sys("listen together works in direct chats and groups (not rooms)");return}
+   musEnsure(active).qopen=false;musUI();return;
+  }
+  if(mus.key!==active){sys("you are already listening in another chat. close that player first");return}
   if(m.classList.toggle("open")){var r=this.getBoundingClientRect();m.style.left=Math.max(6,Math.min(r.left,innerWidth-230))+"px";m.style.bottom=(innerHeight-r.top+6)+"px"}
  };
  document.addEventListener("click",function(){m.classList.remove("open")});
