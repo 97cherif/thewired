@@ -262,6 +262,8 @@ button:disabled{opacity:.4;cursor:default}button:disabled:hover{background:var(-
 #gside{display:none;flex:none;flex-direction:column;gap:6px;width:clamp(210px,17vw,260px);background:var(--panel);border-left:1px solid var(--dim);overflow-y:auto;padding:10px}
 #gside.open{display:flex}
 @media(max-width:900px){#gside.open{display:none}}
+#gshb{display:flex;align-items:center;justify-content:space-between;gap:6px}
+@media(max-width:900px){#gtog{display:none!important}}
 #gsl{display:flex;flex-direction:column;gap:3px}
 .gm{padding:5px 6px;border:1px solid transparent}
 .gm:hover{border-color:var(--dim);background:var(--field)}
@@ -319,7 +321,7 @@ button:disabled{opacity:.4;cursor:default}button:disabled:hover{background:var(-
    </section>
   </aside>
   <div id="chat">
-   <div id="top"><span id="topt">&gt; pick a friend or join a room</span><button class="mini" id="gman" type="button">👥 group</button><button class="mini" id="vcb" type="button" style="display:none"></button><button class="mini" id="play" type="button" title="invite to play"><span class="pl-l">▶ play 3 Lies & 1 Truth</span><span class="pl-s">▶ 3 Lies</span></button><button class="mini" id="playc" type="button" title="invite to play chess"><span class="pl-l">♟ play chess</span><span class="pl-s">♟ chess</span></button><button class="mini" id="playt" type="button" title="invite to play tic tac toe"><span class="pl-l">⭕ play tic tac toe</span><span class="pl-s">⭕ XO</span></button><button class="mini" id="playw" type="button" title="watch YouTube videos together" style="display:none">🎬 watch</button><button class="mini" id="playc4" type="button" title="invite your group to play 2v2 chess" style="display:none"><span class="pl-l">♟ 2v2 chess</span><span class="pl-s">♟ 2v2</span></button><button class="mini" id="playr" type="button" title="invite to play rock paper scissors"><span class="pl-l">✊ rock paper scissors</span><span class="pl-s">✊ RPS</span></button></div>
+   <div id="top"><span id="topt">&gt; pick a friend or join a room</span><button class="mini" id="gman" type="button">👥 group</button><button class="mini" id="gtog" type="button" style="display:none" title="show or hide the members list">hide members</button><button class="mini" id="vcb" type="button" style="display:none"></button><button class="mini" id="play" type="button" title="invite to play"><span class="pl-l">▶ play 3 Lies & 1 Truth</span><span class="pl-s">▶ 3 Lies</span></button><button class="mini" id="playc" type="button" title="invite to play chess"><span class="pl-l">♟ play chess</span><span class="pl-s">♟ chess</span></button><button class="mini" id="playt" type="button" title="invite to play tic tac toe"><span class="pl-l">⭕ play tic tac toe</span><span class="pl-s">⭕ XO</span></button><button class="mini" id="playw" type="button" title="watch YouTube videos together" style="display:none">🎬 watch</button><button class="mini" id="playc4" type="button" title="invite your group to play 2v2 chess" style="display:none"><span class="pl-l">♟ 2v2 chess</span><span class="pl-s">♟ 2v2</span></button><button class="mini" id="playr" type="button" title="invite to play rock paper scissors"><span class="pl-l">✊ rock paper scissors</span><span class="pl-s">✊ RPS</span></button></div>
    <div id="vjoin"></div>
    <div id="mbar"><div class="mtb"><span class="tt">▌WIRED // AUDIO</span><span class="mtn" id="mtn"></span><span class="sp"></span><button class="mwb" id="mtbpp" type="button" title="play / pause"></button><button class="mwb" id="mmin" type="button" title="minimize / restore">_</button><button class="mwb" id="mstop" type="button" title="close the player for everyone">x</button></div><div class="mbd"><div class="mart"><img id="mart" alt=""></div><div class="mi"><div class="mlab" id="mlab">&gt; NOW PLAYING</div><div id="mtitle"><span id="mtx"></span></div><div id="msub"></div><div id="mviz"></div></div></div><div id="ytbox"></div><div class="mpr"><span id="mcur">0:00</span><div id="mprog"></div><span id="mdur">--:--</span></div><div class="mct"><button class="mc" id="mprev" type="button" title="previous"></button><button class="mc" id="mb10" type="button" title="back 10 seconds">-10s</button><button class="mc big" id="mpp" type="button" title="play / pause"></button><button class="mc" id="mf10" type="button" title="forward 10 seconds">+10s</button><button class="mc" id="mnext" type="button" title="next song"></button><div class="mvw"><button class="mc" id="mmute" type="button" title="mute (only for you)">VOL</button><input type="range" id="mvol" min="0" max="100" aria-label="volume"><button class="mc" id="madd" type="button" title="add songs to the queue">+ ADD</button><button class="mc" id="myt" type="button" title="add a YouTube link">▶ YT / Spotify</button><button class="mc" id="mqb" type="button" title="show the queue">☰ 0</button></div></div><div id="mstat"></div><div class="mq" id="mq"></div></div>
    <div id="log"><div class="sys">&gt; present day. present time.</div></div>
@@ -337,7 +339,7 @@ button:disabled{opacity:.4;cursor:default}button:disabled:hover{background:var(-
     <button id="send" type="button">SEND</button>
    </div>
   </div>
-  <aside id="gside" aria-label="group members"><h2 id="gsh">MEMBERS</h2><div class="hint" id="gsr"></div><div id="gsl"></div></aside>
+  <aside id="gside" aria-label="group members"><div id="gshb"><h2 id="gsh">MEMBERS</h2><button class="mini" id="gsx" type="button" title="hide members">✕</button></div><div class="hint" id="gsr"></div><div id="gsl"></div></aside>
  </div>
  <div id="wt"><div id="wtbar"><span id="wttitle">🎬 watch together</span><input id="wturl" type="text" placeholder="paste a YouTube link..." autocomplete="off" aria-label="YouTube link"><button class="mini" id="wtload" type="button">▶ load</button><button class="mini" id="wtmode" type="button" title="video only or chat + video">🎬 video only</button><button class="mini" id="wtfs" type="button" title="full screen">⛶ full screen</button><button class="mini" id="wtx" type="button">✕ leave</button></div><div id="wtmain"><div id="wtv"><div id="wtp"></div><div id="wtsh"></div><div id="wtmsg"></div><button id="wttap" type="button">▶ tap to play</button><div id="wttoast"></div></div><div id="wtc"><div id="wtlog"></div><div class="row"><input id="wtin" type="text" maxlength="200" placeholder="say something..." autocomplete="off"><button id="wtsend" type="button">SEND</button></div></div></div><div id="wtctl"><button class="mini" id="wtpp" type="button">▶</button><input id="wtseek" type="range" min="0" max="1000" value="0" aria-label="seek"><span id="wttime">0:00 / 0:00</span><span id="wtcall"><button class="mini" id="wtmute" type="button"></button><button class="mini" id="wtend" type="button"></button></span><button class="mini" id="wtvol" type="button">🔊</button></div></div>
  <div id="gov"><div id="gbar"><span id="gtitle"></span><button class="mini" id="gx" type="button">✕ leave game</button></div><div id="gbody"><iframe id="gf" title="3 Lies & 1 Truth" sandbox="allow-scripts"></iframe><div id="gdc"><div id="gdhd">💬 chat</div><div id="gdlog"></div><div id="gdty"></div><div class="row"><input type="text" id="gdin" maxlength="200" placeholder="say something..." autocomplete="off"><button id="gdsend" type="button">SEND</button></div></div></div><div id="gdock"><div id="gd1"><span class="grp" id="gdcall" style="display:none"><button class="mini" id="gdmute" type="button"></button><button class="mini" id="gdend" type="button">📵 end call</button></span><span class="grp" id="gdmus" style="display:none"><button class="mini" id="gdprev" type="button">⏮</button><button class="mini" id="gdpp" type="button">▶</button><button class="mini" id="gdnext" type="button">⏭</button><button class="mini" id="gdvol" type="button">🔊</button><span id="gdtt"></span></span><button class="mini" id="gdchat" type="button">💬 chat</button></div></div></div>
@@ -617,9 +619,14 @@ function gFill(g){
  var mem=$("gmem");mem.textContent="";
  if(g)gSorted(g).forEach(function(m){mem.appendChild(gmRow(g,m,true))});
 }
+var gsHide=LS("w97_gshide")==="1";
+function gTog(){gsHide=!gsHide;LS("w97_gshide",gsHide?"1":"0");gPanel()}
+$("gtog").onclick=gTog;$("gsx").onclick=gTog;
 function gPanel(){
- var P=$("gside"),G=active&&active.indexOf("gc:")===0?grp(active.slice(3)):null;
- if(!G){P.classList.remove("open");return}
+ var P=$("gside"),B=$("gtog"),G=active&&active.indexOf("gc:")===0?grp(active.slice(3)):null;
+ if(!G){P.classList.remove("open");B.style.display="none";return}
+ B.style.display="inline-block";B.textContent=gsHide?"show members":"hide members";
+ if(gsHide){P.classList.remove("open");return}
  P.classList.add("open");
  $("gsh").textContent="MEMBERS ("+G.members.length+")";
  var rl=gRole(G,me.id);
