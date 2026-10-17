@@ -259,6 +259,21 @@ button:disabled{opacity:.4;cursor:default}button:disabled:hover{background:var(-
 #wtcall{display:none;gap:6px}
 #wt.cin #wtbar,#wt.cin #wtctl{display:none}
 @media(max-width:720px){#wtmain{flex-direction:column}#wtv{flex:none;width:100%;aspect-ratio:16/9}#wtc{width:auto;flex:1;border-left:0;border-top:1px solid var(--teal)}#wt.vo #wtv{flex:1;aspect-ratio:auto}#wturl{order:5;flex-basis:100%}#wttitle{max-width:30vw}}
+#gside{display:none;flex:none;flex-direction:column;gap:6px;width:clamp(210px,17vw,260px);background:var(--panel);border-left:1px solid var(--dim);overflow-y:auto;padding:10px}
+#gside.open{display:flex}
+@media(max-width:900px){#gside.open{display:none}}
+#gsl{display:flex;flex-direction:column;gap:3px}
+.gm{padding:5px 6px;border:1px solid transparent}
+.gm:hover{border-color:var(--dim);background:var(--field)}
+.gmt{display:flex;align-items:center;gap:7px}
+.gmt .n{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gmt .n.me{color:var(--teal)}
+.gmt .rl{flex:none;font-size:11px;color:var(--soft)}
+.gma{display:flex;flex-wrap:wrap;gap:4px;margin:4px 0 0 37px}
+.gm.s .gma{margin-left:27px}
+.gma button{padding:1px 6px;font-size:11px}
+.gma button.kk{color:var(--red);border-color:#6b2a37}
+.gma button.kk:hover{background:var(--red);color:#fff}
 </style>
 </head>
 <body>
@@ -322,6 +337,7 @@ button:disabled{opacity:.4;cursor:default}button:disabled:hover{background:var(-
     <button id="send" type="button">SEND</button>
    </div>
   </div>
+  <aside id="gside" aria-label="group members"><h2 id="gsh">MEMBERS</h2><div class="hint" id="gsr"></div><div id="gsl"></div></aside>
  </div>
  <div id="wt"><div id="wtbar"><span id="wttitle">🎬 watch together</span><input id="wturl" type="text" placeholder="paste a YouTube link..." autocomplete="off" aria-label="YouTube link"><button class="mini" id="wtload" type="button">▶ load</button><button class="mini" id="wtmode" type="button" title="video only or chat + video">🎬 video only</button><button class="mini" id="wtfs" type="button" title="full screen">⛶ full screen</button><button class="mini" id="wtx" type="button">✕ leave</button></div><div id="wtmain"><div id="wtv"><div id="wtp"></div><div id="wtsh"></div><div id="wtmsg"></div><button id="wttap" type="button">▶ tap to play</button><div id="wttoast"></div></div><div id="wtc"><div id="wtlog"></div><div class="row"><input id="wtin" type="text" maxlength="200" placeholder="say something..." autocomplete="off"><button id="wtsend" type="button">SEND</button></div></div></div><div id="wtctl"><button class="mini" id="wtpp" type="button">▶</button><input id="wtseek" type="range" min="0" max="1000" value="0" aria-label="seek"><span id="wttime">0:00 / 0:00</span><span id="wtcall"><button class="mini" id="wtmute" type="button"></button><button class="mini" id="wtend" type="button"></button></span><button class="mini" id="wtvol" type="button">🔊</button></div></div>
  <div id="gov"><div id="gbar"><span id="gtitle"></span><button class="mini" id="gx" type="button">✕ leave game</button></div><div id="gbody"><iframe id="gf" title="3 Lies & 1 Truth" sandbox="allow-scripts"></iframe><div id="gdc"><div id="gdhd">💬 chat</div><div id="gdlog"></div><div id="gdty"></div><div class="row"><input type="text" id="gdin" maxlength="200" placeholder="say something..." autocomplete="off"><button id="gdsend" type="button">SEND</button></div></div></div><div id="gdock"><div id="gd1"><span class="grp" id="gdcall" style="display:none"><button class="mini" id="gdmute" type="button"></button><button class="mini" id="gdend" type="button">📵 end call</button></span><span class="grp" id="gdmus" style="display:none"><button class="mini" id="gdprev" type="button">⏮</button><button class="mini" id="gdpp" type="button">▶</button><button class="mini" id="gdnext" type="button">⏭</button><button class="mini" id="gdvol" type="button">🔊</button><span id="gdtt"></span></span><button class="mini" id="gdchat" type="button">💬 chat</button></div></div></div>
@@ -441,7 +457,10 @@ function refreshTicks(){
 function cleanG(g){
  if(!g||typeof g!=="object"||!/^g[a-z0-9]{6,11}$/.test(g.id||""))return null;
  var ms=[];(Array.isArray(g.members)?g.members:[]).slice(0,30).forEach(function(m){if(m&&validId(m.id||"")&&!ms.some(function(x){return x.id===m.id}))ms.push({id:m.id,name:clean(m.name,16)||"anon"})});
- return{id:g.id,name:clean(g.name,20)||"group",owner:validId(g.owner||"")?g.owner:"",members:ms};
+ var ow=validId(g.owner||"")?g.owner:"",ids=ms.map(function(m){return m.id}),mods=[],kicked=[];
+ (Array.isArray(g.mods)?g.mods:[]).slice(0,30).forEach(function(x){if(typeof x==="string"&&ids.indexOf(x)>=0&&x!==ow&&mods.indexOf(x)<0)mods.push(x)});
+ (Array.isArray(g.kicked)?g.kicked:[]).slice(0,50).forEach(function(x){if(typeof x==="string"&&validId(x)&&ids.indexOf(x)<0&&kicked.indexOf(x)<0)kicked.push(x)});
+ return{id:g.id,name:clean(g.name,20)||"group",owner:ow,mods:mods,kicked:kicked,members:ms};
 }
 groups=groups.map(cleanG).filter(Boolean);
 function saveG(){LS("w97_groups",JSON.stringify(groups))}
@@ -459,35 +478,162 @@ function renderGroups(){
  });
 }
 function createGroup(name,ids){
- var g={id:"g"+rnd(8),name:name,owner:me.id,members:[{id:me.id,name:me.name}]};
+ var g={id:"g"+rnd(8),name:name,owner:me.id,mods:[],kicked:[],members:[{id:me.id,name:me.name}]};
  ids.forEach(function(id){g.members.push({id:id,name:nameOf(id)})});
  groups.push(g);saveG();chats["gc:"+g.id]=[];
  ids.forEach(function(id){queue(id,{t:"gnew",g:g},"c"+rnd(8))});
  open("gc:"+g.id);sys("group created. members who are offline get it when they come online.");
 }
+/* roles: the creator is the owner. the owner can remove anyone and give or take moderator.
+   a moderator can remove regular members (not the owner, not other moderators).
+   every device checks the sender against its own copy of the group before obeying. */
+function gRole(G,id){return G.owner&&id===G.owner?"owner":(G.mods.indexOf(id)>=0?"mod":"member")}
+function canKick(G,by,target){
+ if(!by||!target||by===target||!inG(G,by)||!inG(G,target))return false;
+ var rb=gRole(G,by),rt=gRole(G,target);
+ if(rb==="owner")return true;
+ if(rb==="mod")return rt==="member";
+ return false;
+}
+function canMod(G,by,target){return !!G.owner&&by===G.owner&&target!==G.owner&&inG(G,target)}
+function gApplyKick(G,id){
+ G.members=G.members.filter(function(m){return m.id!==id});
+ G.mods=G.mods.filter(function(x){return x!==id});
+ if(G.kicked.indexOf(id)<0){G.kicked.push(id);if(G.kicked.length>50)G.kicked.shift()}
+ saveG();
+}
+function gTopUpd(G){
+ var top=$("topt"),b=document.createElement("b");b.textContent=G.name;top.textContent="";
+ top.appendChild(document.createTextNode("> group "));top.appendChild(b);top.appendChild(document.createTextNode(" · "+G.members.length+" members"));
+}
+function gRefresh(G){
+ if(active==="gc:"+G.id)gTopUpd(G);
+ renderFriends();
+ if(gmode===G&&$("gmod").classList.contains("open"))gFill(G);
+}
+/* this device is no longer in the group (left or removed) */
+function gGone(G){
+ groups=groups.filter(function(x){return x!==G});
+ if(left.indexOf(G.id)<0)left.push(G.id);
+ LS("w97_left",JSON.stringify(left));saveG();
+ delete chats["gc:"+G.id];saveSoon();
+ if(gmode===G){gmode=null;$("gmod").classList.remove("open")}
+ if(wt&&wt.key==="gc:"+G.id)wtClose(false);
+ if(gameG&&gameG.gid===G.id)gameClose(false);
+ if(active==="gc:"+G.id){
+  active=null;$("log").textContent="";$("topt").textContent="> pick a friend or join a room";
+  $("gman").style.display=$("playc4").style.display=$("playw").style.display="none";
+ }
+ renderFriends();
+}
+function gKick(G,id){
+ if(!canKick(G,me.id,id))return;
+ var nm=memName(G,id);
+ if(!confirm("Remove "+nm+" from "+G.name+"?"))return;
+ G.members.forEach(function(m){if(m.id!==me.id)queue(m.id,{t:"gkick",gid:G.id,id:id},"c"+rnd(8))});
+ gApplyKick(G,id);gRefresh(G);
+ if(active==="gc:"+G.id)sys("you removed "+nm);
+}
+function gSetMod(G,id,on){
+ if(!canMod(G,me.id,id))return;
+ var i=G.mods.indexOf(id);
+ if(on&&i<0)G.mods.push(id);else if(!on&&i>=0)G.mods.splice(i,1);else return;
+ saveG();
+ G.members.forEach(function(m){if(m.id!==me.id)queue(m.id,{t:"gmod",gid:G.id,id:id,on:on?1:0},"c"+rnd(8))});
+ gRefresh(G);
+ if(active==="gc:"+G.id)sys(memName(G,id)+(on?" is now a moderator":" is no longer a moderator"));
+}
 function gctl(c,d,f){
  var id=c.peer;
  if(d.t==="gnew"){
   var ng=cleanG(d.g);if(!ng||!f||!f.ok)return;
-  if(left.indexOf(ng.id)>=0||grp(ng.id)){ack(c,d);return}
+  if(grp(ng.id)){ack(c,d);return}
+  if(left.indexOf(ng.id)>=0){
+   /* someone who left or was removed only comes back when the owner adds them again */
+   if(!(ng.owner&&ng.owner===id&&inG(ng,me.id))){ack(c,d);return}
+   left=left.filter(function(x){return x!==ng.id});LS("w97_left",JSON.stringify(left));
+  }
   if(!inG(ng,me.id))return;
   ack(c,d);groups.push(ng);saveG();chats["gc:"+ng.id]=chats["gc:"+ng.id]||[];unread["gc:"+ng.id]=1;beep("req");
   ng.members.forEach(function(m){if(m.id!==me.id)pingOne(m.id)});renderFriends();
  }else{
   var G=grp(d.gid||(d.g&&d.g.id));if(!G||!inG(G,id))return;ack(c,d);
-  if(d.t==="gleave")G.members=G.members.filter(function(m){return m.id!==id});
-  else{var ug=cleanG(d.g);if(ug)ug.members.forEach(function(m){if(!inG(G,m.id)){G.members.push(m);if(m.id!==me.id)pingOne(m.id)}})}
+  var tg=typeof d.id==="string"?d.id:"";
+  if(d.t==="gkick"){
+   if(!canKick(G,id,tg))return;
+   var by=memName(G,id),kn=memName(G,tg);
+   if(tg===me.id){gGone(G);sys("you were removed from "+G.name+" by "+by);beep("req");return}
+   gApplyKick(G,tg);gRefresh(G);
+   if(active==="gc:"+G.id)sys(by+" removed "+kn);
+   return;
+  }
+  if(d.t==="gmod"){
+   if(!canMod(G,id,tg))return;
+   var j=G.mods.indexOf(tg),on=!!d.on;
+   if(on&&j<0)G.mods.push(tg);else if(!on&&j>=0)G.mods.splice(j,1);else return;
+   saveG();gRefresh(G);
+   if(active==="gc:"+G.id)sys(tg===me.id?(on?"you are now a moderator of "+G.name:"you are no longer a moderator of "+G.name):memName(G,tg)+(on?" is now a moderator":" is no longer a moderator"));
+   return;
+  }
+  if(d.t==="gleave"){G.members=G.members.filter(function(m){return m.id!==id});G.mods=G.mods.filter(function(x){return x!==id})}
+  else{
+   var ug=cleanG(d.g);
+   if(ug)ug.members.forEach(function(m){
+    if(inG(G,m.id))return;
+    var k=G.kicked.indexOf(m.id);
+    if(k>=0){if(id!==G.owner)return;G.kicked.splice(k,1)}   /* only the owner can bring a removed person back */
+    G.members.push(m);if(m.id!==me.id)pingOne(m.id);
+   });
+  }
   saveG();renderFriends();if(active==="gc:"+G.id)open(active);
  }
+}
+/* ---------- members panel (right side) + the same rows inside the group popup ---------- */
+function gSorted(G){
+ var rk=function(id){var r=gRole(G,id);return r==="owner"?0:r==="mod"?1:2},on=function(id){return id===me.id||online[id]?0:1};
+ return G.members.slice().sort(function(a,b){return(rk(a.id)-rk(b.id))||(on(a.id)-on(b.id))||memName(G,a.id).localeCompare(memName(G,b.id))});
+}
+function gmRow(G,m,sm){
+ var r=document.createElement("div"),t=document.createElement("div"),role=gRole(G,m.id),you=m.id===me.id;
+ r.className="gm"+(sm?" s":"");t.className="gmt";
+ var aw=document.createElement("span"),dt=document.createElement("span"),n=document.createElement("span");
+ aw.className="avw";aw.appendChild(avatar(m.id,sm?"sm":""));
+ dt.className="dot"+(you||online[m.id]?" on":"");aw.appendChild(dt);
+ n.className="n"+(you?" me":"");n.textContent=you?me.name+" (you)":memName(G,m.id);
+ t.appendChild(aw);t.appendChild(n);
+ if(role!=="member"){var b=document.createElement("span");b.className="rl";b.textContent=role==="owner"?"👑 owner":"🛡 mod";t.appendChild(b)}
+ r.appendChild(t);
+ var acts=[];
+ if(canMod(G,me.id,m.id))acts.push([role==="mod"?"remove mod":"make mod",false,function(){gSetMod(G,m.id,role!=="mod")}]);
+ if(canKick(G,me.id,m.id))acts.push(["kick",true,function(){gKick(G,m.id)}]);
+ if(acts.length){
+  var a=document.createElement("div");a.className="gma";
+  acts.forEach(function(x){var bt=document.createElement("button");bt.type="button";bt.className="mini"+(x[1]?" kk":"");bt.textContent=x[0];bt.onclick=x[2];a.appendChild(bt)});
+  r.appendChild(a);
+ }
+ return r;
+}
+function gFill(g){
+ var mem=$("gmem");mem.textContent="";
+ if(g)gSorted(g).forEach(function(m){mem.appendChild(gmRow(g,m,true))});
+}
+function gPanel(){
+ var P=$("gside"),G=active&&active.indexOf("gc:")===0?grp(active.slice(3)):null;
+ if(!G){P.classList.remove("open");return}
+ P.classList.add("open");
+ $("gsh").textContent="MEMBERS ("+G.members.length+")";
+ var rl=gRole(G,me.id);
+ $("gsr").textContent=rl==="owner"?"you own this group. you can remove people and make moderators.":(rl==="mod"?"you are a moderator. you can remove regular members.":"");
+ var L=$("gsl");L.textContent="";
+ gSorted(G).forEach(function(m){L.appendChild(gmRow(G,m,false))});
 }
 var gmode=null;
 function gmodal(mode){
  var g=mode==="manage"?grp((active||"").slice(3)):null;if(mode==="manage"&&!g)return;gmode=g;
  $("gmt").textContent=g?"GROUP: "+g.name:"NEW GROUP";$("gname").style.display=g?"none":"block";$("gleave").style.display=g?"inline-block":"none";
- var mem=$("gmem");mem.textContent="";
- if(g)g.members.forEach(function(m){var r=document.createElement("div");r.className="pk";r.appendChild(avatar(m.id,"sm"));r.appendChild(document.createTextNode(m.id===me.id?m.name+" (you)":(fr(m.id)?fr(m.id).name:m.name)));mem.appendChild(r)});
+ gFill(g);
  var pk=$("gpick");pk.textContent="";var any=0,lab=document.createElement("div");lab.className="hint";lab.textContent=g?"add friends:":"pick friends:";pk.appendChild(lab);
- friends.forEach(function(f){if(!f.ok||(g&&inG(g,f.id)))return;any=1;
+ friends.forEach(function(f){if(!f.ok||(g&&(inG(g,f.id)||(g.owner!==me.id&&g.kicked.indexOf(f.id)>=0))))return;any=1;
   var r=document.createElement("label");r.className="pk";var cb=document.createElement("input");cb.type="checkbox";cb.value=f.id;r.appendChild(cb);r.appendChild(avatar(f.id,"sm"));r.appendChild(document.createTextNode(f.name));pk.appendChild(r)});
  if(!any){var e=document.createElement("div");e.className="hint";e.textContent="no friends to add (they must have accepted you).";pk.appendChild(e)}
  $("gmod").classList.add("open");
@@ -498,7 +644,9 @@ $("gcx").onclick=function(){$("gmod").classList.remove("open")};
 $("gok").onclick=function(){
  var ids=[].slice.call($("gpick").querySelectorAll("input:checked")).map(function(c){return c.value});
  if(gmode){
+  if(gmode.owner!==me.id)ids=ids.filter(function(id){return gmode.kicked.indexOf(id)<0});
   if(ids.length){var g=gmode,old=g.members.slice(),add=ids.map(function(id){return{id:id,name:nameOf(id)}});
+   g.kicked=g.kicked.filter(function(k){return ids.indexOf(k)<0});
    add.forEach(function(m){g.members.push(m)});saveG();
    add.forEach(function(m){queue(m.id,{t:"gnew",g:g},"c"+rnd(8))});
    old.forEach(function(m){if(m.id!==me.id)queue(m.id,{t:"gu",gid:g.id,g:g},"c"+rnd(8))});
@@ -640,7 +788,7 @@ function renderFriends(){
   z.onclick=function(){reqs=reqs.filter(function(g){return g!==q});renderFriends()};
   r.appendChild(n);r.appendChild(y);r.appendChild(z);rb.appendChild(r);
  });
- renderGroups();refreshTicks();vcUI();if(mus)musUI();
+ renderGroups();gPanel();refreshTicks();vcUI();if(mus)musUI();
 }
 
 /* ---------- direct connections (friends) ---------- */
@@ -664,7 +812,7 @@ function wire(c){
   else if(d.t==="ty"){typing(c,d,f)}else if(d.t==="pf"){if(known(id))setPf(id,d.p)}
   else if(d.t==="ack"){if(typeof d.id==="string"){outbox=outbox.filter(function(e){return!(e.to===id&&e.id===d.id)});saveOB();refreshTicks()}}
   else if(d.t==="gm"){var G=grp(d.gid);if(G&&inG(G,id)){ack(c,d);var gm=safe(d,false);gm.u=id;clearTyper("gc:"+G.id,id);addMsg("gc:"+G.id,gm)}}
-  else if(d.t==="gnew"||d.t==="gu"||d.t==="gleave"){gctl(c,d,f)}
+  else if(d.t==="gnew"||d.t==="gu"||d.t==="gleave"||d.t==="gkick"||d.t==="gmod"){gctl(c,d,f)}
   else if(d.t==="mu"){musRx(c,d,f)}else if(d.t==="vc"){vcSig(c,d,f)}else if(d.t==="scr"){scrSig(c,d)}else if(d.t==="gvj"||d.t==="gvp"||d.t==="gvh"||d.t==="gvl"){gvSig(c,d)}else if(d.t==="g"&&f&&f.ok&&gameWith===id){if(d.m&&d.m.type==="chat"){gdTyClr();gdChat(f.name,clean(d.m.x,200),0)}else if(d.m&&d.m.type==="gty"){gdTy(f.name)}else if(gready)$("gf").contentWindow.postMessage({gm:"rx",m:d.m},"*");else gq.push(d.m)}
   else if(d.t==="g4"){g4rx(c,d)}
   else if(d.t==="wt"){wtRx(c,d)}
